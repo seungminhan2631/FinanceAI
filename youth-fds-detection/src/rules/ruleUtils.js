@@ -17,11 +17,13 @@ function validateBaseTransaction(transaction) {
     transaction.transaction_id.trim() !== "";
   const transactionDate = new Date(transaction.transaction_datetime);
 
+  const FUTURE_TIME_TOLERANCE_MS = 5000;
+
   const hasValidDatetime =
     transaction.transaction_datetime !== null &&
     transaction.transaction_datetime !== undefined &&
     !Number.isNaN(transactionDate.getTime()) &&
-    transactionDate.getTime() <= Date.now();
+    transactionDate.getTime() <= Date.now() + FUTURE_TIME_TOLERANCE_MS;
   const hasValidStatus = Object.values(TRANSACTION_STATUS).includes(
     transaction.transaction_status,
   );

@@ -1,12 +1,19 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
+require("dotenv").config({ path: "./database/.env" });
+const express = require("express");
+const cors = require("cors");
+const { Pool } = require("pg");
 
 // 🤖 요구사항 16번: 최종 분석 서비스 및 AI 모듈 경로 지정 및 실제 로드
-const { analyzeTransactionRisk } = require('./youth-fds-detection/src/services/finalRiskAnalysisService');
-const { buildTrainingFeatures } = require('./youth-fds-detection/src/ai/trainingDataBuilder');
-const { trainModel, predictAnomaly } = require('./youth-fds-detection/src/ai/aiModel');
+const {
+  analyzeTransactionRisk,
+} = require("./youth-fds-detection/src/services/finalRiskAnalysisService");
+const {
+  buildTrainingFeatures,
+} = require("./youth-fds-detection/src/ai/trainingDataBuilder");
+const {
+  trainModel,
+  predictAnomaly,
+} = require("./youth-fds-detection/src/ai/aiModel");
 
 const app = express();
 app.use(cors());
@@ -14,31 +21,32 @@ app.use(express.json());
 
 // DB 연결
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 // 20자리 이하 고유 ID 생성 함수
 function generateShortTxId() {
   const timestamp = Date.now().toString();
-  const randomStr = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+  const randomStr = Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, "0");
   return `tx_${timestamp.slice(-10)}_${randomStr}`;
 }
 
 // 업종 카테고리 영문 표준화 매핑 (요구사항 10번)
 const CATEGORY_MAP = {
-  '주얼리': 'JEWELRY',
-  '보석': 'JEWELRY',
-  '식비': 'FOOD',
-  '음식점': 'FOOD',
-  '식당': 'FOOD',
-  '카페': 'CAFE',
-  '편의점': 'CONVENIENCE',
-  '게임': 'GAME_DIGITAL',
-  '교통': 'TRANSPORT'
+  주얼리: "JEWELRY",
+  보석: "JEWELRY",
+  식비: "FOOD",
+  음식점: "FOOD",
+  식당: "FOOD",
+  카페: "CAFE",
+  편의점: "CONVENIENCE",
+  게임: "GAME_DIGITAL",
+  교통: "TRANSPORT",
 };
 
 // 전역 상태 및 Readiness 플래그
@@ -48,7 +56,7 @@ let isEngineReady = false;
 // DB 및 AI 엔진 초기화 (요구사항 3, 7, 8번)
 async function initAiEngine() {
   try {
-    console.log('🔄 DB 테이블 점검 및 AI 엔진 초기화를 시작합니다...');
+    console.log("🔄 DB 테이블 점검 및 AI 엔진 초기화를 시작합니다...");
 
     // fds_alerts 테이블 자동 생성 (NULL 허용)
     await pool.query(`
@@ -63,19 +71,31 @@ async function initAiEngine() {
     `);
 
     // AI 학습 데이터 로드
-    const result = await pool.query('SELECT * FROM transactions ORDER BY transaction_datetime ASC');
-    
+    const result = await pool.query(
+      "SELECT * FROM transactions ORDER BY transaction_datetime ASC",
+    );
+
     if (result.rows.length === 0) {
-      console.log('⚠️ DB에 거래 데이터가 없습니다. AI 모델 미학습 상태로 준비를 마칩니다.');
+      console.log(
+        "⚠️ DB에 거래 데이터가 없습니다. AI 모델 미학습 상태로 준비를 마칩니다.",
+      );
       isEngineReady = true;
       return;
     }
 
-    const { trainingFeatures, usableFeatureCount } = buildTrainingFeatures(result.rows);
-    
+    const { trainingFeatures, usableFeatureCount } = buildTrainingFeatures(
+      result.rows,
+    );
+
     // 요구사항 8번: 학습 가능 Feature 개수 검증 (0개일 시 처리)
-    if (!trainingFeatures || trainingFeatures.length === 0 || usableFeatureCount === 0) {
-      console.warn('⚠️ 학습 가능한 유효 Feature가 0개입니다. AI 모델을 미학습 상태로 유지합니다.');
+    if (
+      !trainingFeatures ||
+      trainingFeatures.length === 0 ||
+      usableFeatureCount === 0
+    ) {
+      console.warn(
+        "⚠️ 학습 가능한 유효 Feature가 0개입니다. AI 모델을 미학습 상태로 유지합니다.",
+      );
       globalReferenceScores = [];
       isEngineReady = true;
       return;
@@ -86,60 +106,94 @@ async function initAiEngine() {
 
     globalReferenceScores = trainingFeatures.map((feat) => {
       const pred = predictAnomaly(feat);
-      return pred.anomalyScore; 
+      return pred.anomalyScore;
     });
 
     isEngineReady = true;
-    console.log(`🤖 AI Engine Trained: 총 ${usableFeatureCount}건의 Feature 데이터로 Isolation Forest 학습 및 referenceScores 구축 완료!`);
+    console.log(
+      `🤖 AI Engine Trained: 총 ${usableFeatureCount}건의 Feature 데이터로 Isolation Forest 학습 및 referenceScores 구축 완료!`,
+    );
   } catch (err) {
-    console.error('❌ AI Engine / DB 초기화 중 오류 발생:', err.message);
+    console.error("❌ AI Engine / DB 초기화 중 오류 발생:", err.message);
     process.exit(1);
   }
 }
 
 // 요구사항 7번: Readiness 미들웨어 (AI 준비 전 API 요청 차단)
 app.use((req, res, next) => {
-  if (req.path === '/health') return next();
+  if (req.path === "/health") return next();
   if (!isEngineReady) {
     return res.status(503).json({
       success: false,
-      error: 'MODEL_NOT_TRAINED',
-      message: 'AI 엔진이 아직 초기화 중이거나 준비되지 않았습니다.'
+      error: "MODEL_NOT_TRAINED",
+      message: "AI 엔진이 아직 초기화 중이거나 준비되지 않았습니다.",
     });
   }
   next();
 });
 
 // 1. 서버 상태 점검 API
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', engineReady: isEngineReady, message: 'FDS 백엔드 서버 상태 정상' });
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    engineReady: isEngineReady,
+    message: "FDS 백엔드 서버 상태 정상",
+  });
 });
 
 // 2. 결제 발생 및 이상 탐지(FDS) API
-app.post('/api/transactions', async (req, res) => {
+app.post("/api/transactions", async (req, res) => {
   const { userId, amount, merchantName, merchantCategory } = req.body;
 
   // 요구사항 9번, 11번: 입력값 검증 및 Bad Request 처리
   if (!userId) {
-    return res.status(400).json({ success: false, error: 'userId는 필수 입력 항목입니다.' });
+    return res
+      .status(400)
+      .json({ success: false, error: "userId는 필수 입력 항목입니다." });
   }
-  if (amount === undefined || amount === null || typeof amount !== 'number' || !Number.isFinite(amount) || amount < 1) {
-    return res.status(400).json({ success: false, error: 'amount는 1 이상의 유효한 숫자여야 합니다.' });
+  if (
+    amount === undefined ||
+    amount === null ||
+    typeof amount !== "number" ||
+    !Number.isFinite(amount) ||
+    amount < 1
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "amount는 1 이상의 유효한 숫자여야 합니다.",
+    });
   }
-  if (!merchantName || typeof merchantName !== 'string' || merchantName.trim() === '') {
-    return res.status(400).json({ success: false, error: 'merchantName은 필수 입력 항목입니다.' });
+  if (
+    !merchantName ||
+    typeof merchantName !== "string" ||
+    merchantName.trim() === ""
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, error: "merchantName은 필수 입력 항목입니다." });
   }
-  if (!merchantCategory || typeof merchantCategory !== 'string' || merchantCategory.trim() === '') {
-    return res.status(400).json({ success: false, error: 'merchantCategory는 필수 입력 항목입니다.' });
+  if (
+    !merchantCategory ||
+    typeof merchantCategory !== "string" ||
+    merchantCategory.trim() === ""
+  ) {
+    return res.status(400).json({
+      success: false,
+      error: "merchantCategory는 필수 입력 항목입니다.",
+    });
   }
 
   // 요구사항 9번: 사용자 ID 규격 통일 (숫자 1 -> U001)
-  const formattedUserId = typeof userId === 'number' ? `U${String(userId).padStart(3, '0')}` : String(userId);
-  
+  const formattedUserId =
+    typeof userId === "number"
+      ? `U${String(userId).padStart(3, "0")}`
+      : String(userId);
+
   // 요구사항 10번: merchantCategory 카테고리 표준화
   const rawCategory = String(merchantCategory).trim();
-  const normalizedCategory = CATEGORY_MAP[rawCategory] || rawCategory.toUpperCase();
-  
+  const normalizedCategory =
+    CATEGORY_MAP[rawCategory] || rawCategory.toUpperCase();
+
   const newTransactionId = generateShortTxId();
 
   try {
@@ -148,7 +202,13 @@ app.post('/api/transactions', async (req, res) => {
       `INSERT INTO transactions (transaction_id, user_id, amount, merchant_name, merchant_category, transaction_datetime, transaction_status)
        VALUES ($1, $2, $3, $4, $5, NOW(), 'APPROVED') 
        RETURNING transaction_id, transaction_datetime, transaction_status`,
-      [newTransactionId, formattedUserId, amount, merchantName, normalizedCategory]
+      [
+        newTransactionId,
+        formattedUserId,
+        amount,
+        merchantName,
+        normalizedCategory,
+      ],
     );
     const newTx = txResult.rows[0];
 
@@ -159,7 +219,7 @@ app.post('/api/transactions', async (req, res) => {
          AND transaction_datetime < $2 
          AND transaction_id != $3
        ORDER BY transaction_datetime ASC`,
-      [formattedUserId, newTx.transaction_datetime, newTx.transaction_id]
+      [formattedUserId, newTx.transaction_datetime, newTx.transaction_id],
     );
 
     // 요구사항 5번: currentTxData 데이터 구성
@@ -168,34 +228,47 @@ app.post('/api/transactions', async (req, res) => {
       user_id: formattedUserId,
       amount,
       merchant_category: normalizedCategory,
-      transaction_datetime: newTx.transaction_datetime ? newTx.transaction_datetime.toISOString() : new Date().toISOString(),
-      transaction_status: 'APPROVED'
+      transaction_datetime: newTx.transaction_datetime
+        ? newTx.transaction_datetime.toISOString()
+        : new Date().toISOString(),
+      transaction_status: "APPROVED",
     };
 
     // 요구사항 1번: analyzeTransactionRisk 단일 분석 함수 호출
     const analysisResult = analyzeTransactionRisk(
       currentTxData,
       historyResult.rows,
-      globalReferenceScores
+      globalReferenceScores,
     );
 
     // 요구사항 12, 14번: Alert 저장 정책 적용 (CAUTION, HIGH만 저장 및 실제 detectedRules 기반 reason 기록)
-    if (analysisResult.available && analysisResult.risk && analysisResult.risk.level) {
+    if (
+      analysisResult.available &&
+      analysisResult.risk &&
+      analysisResult.risk.level
+    ) {
       const riskLevel = analysisResult.risk.level;
-      if (riskLevel === 'HIGH' || riskLevel === 'CAUTION') {
+      if (riskLevel === "HIGH" || riskLevel === "CAUTION") {
         try {
-          const detectedRuleNames = analysisResult.rule?.detectedRules?.map(r => r.ruleName || r.ruleId).join(', ');
-          const alertReason = detectedRuleNames 
+          const detectedRuleNames =
+            analysisResult.rule?.detectedRules?.join(", ");
+
+          const alertReason = detectedRuleNames
             ? `[${riskLevel}] 탐지 규칙: ${detectedRuleNames}`
             : `[${riskLevel}] AI 종합 위험도 초과`;
 
           await pool.query(
             `INSERT INTO fds_alerts (transaction_id, risk_score, risk_level, reason)
              VALUES ($1, $2, $3, $4)`,
-            [newTx.transaction_id, analysisResult.risk.combinedScore, riskLevel, alertReason]
+            [
+              newTx.transaction_id,
+              analysisResult.risk.combinedScore,
+              riskLevel,
+              alertReason,
+            ],
           );
         } catch (alertErr) {
-          console.warn('⚠️ fds_alerts DB 저장 중 경고:', alertErr.message);
+          console.warn("⚠️ fds_alerts DB 저장 중 경고:", alertErr.message);
         }
       }
     }
@@ -205,17 +278,16 @@ app.post('/api/transactions', async (req, res) => {
       success: true,
       transactionId: newTx.transaction_id,
       approvedAt: newTx.transaction_datetime,
-      analysis: analysisResult
+      analysis: analysisResult,
     });
-
   } catch (err) {
-    console.error('❌ Transactions API 처리 중 예외 발생:', err);
+    console.error("❌ Transactions API 처리 중 예외 발생:", err);
     return res.status(500).json({ success: false, error: err.message });
   }
 });
 
 // 3. 위험 탐지 내역 조회 API
-app.get('/api/alerts', async (req, res) => {
+app.get("/api/alerts", async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
@@ -241,10 +313,16 @@ app.get('/api/alerts', async (req, res) => {
 });
 
 // 4. 전체 거래 목록 조회 API
-app.get('/api/transactions', async (req, res) => {
+app.get("/api/transactions", async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM transactions ORDER BY transaction_datetime DESC');
-    res.json({ success: true, count: result.rowCount, transactions: result.rows });
+    const result = await pool.query(
+      "SELECT * FROM transactions ORDER BY transaction_datetime DESC",
+    );
+    res.json({
+      success: true,
+      count: result.rowCount,
+      transactions: result.rows,
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
@@ -256,7 +334,9 @@ const PORT = process.env.PORT || 3000;
 async function startServer() {
   await initAiEngine();
   app.listen(PORT, () => {
-    console.log(`🚀 백엔드 서버가 http://localhost:${PORT} 에서 정상 실행 중입니다.`);
+    console.log(
+      `🚀 백엔드 서버가 http://localhost:${PORT} 에서 정상 실행 중입니다.`,
+    );
   });
 }
 

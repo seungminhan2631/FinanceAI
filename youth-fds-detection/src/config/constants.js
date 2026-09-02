@@ -135,21 +135,21 @@ const RISK = {
   LEVELS: {
     LOW: {
       MIN: 0,
-      MAX: 19,
+      MAX: 9,
     },
 
     MONITOR: {
-      MIN: 20,
-      MAX: 39,
+      MIN: 10,
+      MAX: 29,
     },
 
     CAUTION: {
-      MIN: 40,
-      MAX: 59,
+      MIN: 30,
+      MAX: 49,
     },
 
     HIGH: {
-      MIN: 60,
+      MIN: 50,
       MAX: 100,
     },
   },
