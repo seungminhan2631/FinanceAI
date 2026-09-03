@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceAI - 거래내역</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="logo-box">
+      <h1>FinanceAI</h1>
+      <p>청소년 금융 이상행동 조기경보 AI</p>
+    </div>
+
+    <div class="user-box">
+      <span class="user-name">김민수</span>
+      <span class="user-age">17세</span>
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="page-top">
+
+      <div>
+        <p class="page-label">TRANSACTIONS</p>
+        <h1>거래내역</h1>
+        <p class="page-description">
+          최근 결제 내역과 이상행동 탐지 결과를 확인할 수 있습니다.
+        </p>
+      </div>
+
+      <button
+        class="back-dashboard-button"
+        onclick="location.href='./dashboard.html'"
+      >
+        대시보드로 돌아가기
+      </button>
+
+    </div>
+
+
+    <section class="transaction-summary-grid">
+
+      <article class="transaction-summary-card">
+        <p>오늘 결제 금액</p>
+        <strong>128,500원</strong>
+      </article>
+
+      <article class="transaction-summary-card">
+        <p>오늘 결제 횟수</p>
+        <strong>6건</strong>
+      </article>
+
+      <article class="transaction-summary-card">
+        <p>이상행동 탐지</p>
+        <strong class="danger-text">2건</strong>
+      </article>
+
+    </section>
+
+
+    <section class="content-card">
+
+      <div class="transaction-filter">
+
+        <div>
+          <h2>전체 거래</h2>
+          <p>최근 승인된 거래를 최신순으로 표시합니다.</p>
+        </div>
+
+
+        <div class="filter-buttons">
+
+          <button class="filter-button active">
+            전체
+          </button>
+
+          <button class="filter-button">
+            정상
+          </button>
+
+          <button class="filter-button">
+            주의
+          </button>
+
+          <button class="filter-button">
+            위험
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="transaction-table-header">
+
+        <span>거래정보</span>
+        <span>결제시간</span>
+        <span>금액</span>
+        <span>상태</span>
+
+      </div>
+
+
+      <div class="full-transaction-list">
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=1'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>OO편의점</strong>
+            <span>편의점</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>23:42</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            85,000원
+          </div>
+
+          <div>
+            <span class="transaction-status danger">
+              위험
+            </span>
+          </div>
+
+        </div>
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=2'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>XX게임</strong>
+            <span>게임 / 디지털 콘텐츠</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>23:36</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            32,000원
+          </div>
+
+          <div>
+            <span class="transaction-status warning">
+              주의
+            </span>
+          </div>
+
+        </div>
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=3'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>ABC카페</strong>
+            <span>카페</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>18:20</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            6,500원
+          </div>
+
+          <div>
+            <span class="transaction-status normal">
+              정상
+            </span>
+          </div>
+
+        </div>
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=4'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>OO분식</strong>
+            <span>음식점</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>16:15</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            5,000원
+          </div>
+
+          <div>
+            <span class="transaction-status normal">
+              정상
+            </span>
+          </div>
+
+        </div>
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=5'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>버스 교통카드</strong>
+            <span>교통</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>14:32</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            1,500원
+          </div>
+
+          <div>
+            <span class="transaction-status normal">
+              정상
+            </span>
+          </div>
+
+        </div>
+
+
+        <div
+          class="full-transaction-item"
+          onclick="location.href='./transaction-detail.html?id=6'"
+        >
+
+          <div class="transaction-main-info">
+            <strong>학교 매점</strong>
+            <span>식품</span>
+          </div>
+
+          <div class="transaction-time">
+            <strong>12:10</strong>
+            <span>2026.08.25</span>
+          </div>
+
+          <div class="transaction-amount">
+            3,500원
+          </div>
+
+          <div>
+            <span class="transaction-status normal">
+              정상
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
