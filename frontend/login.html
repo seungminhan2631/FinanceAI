@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceAI - 로그인</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body class="login-page">
+
+  <main class="login-container">
+
+    <section class="login-card">
+
+      <div class="login-logo">
+        FinanceAI
+      </div>
+
+      <h1>로그인</h1>
+
+      <p class="login-description">
+        개인별 금융 위험도와 이상행동 분석 결과를 확인하세요.
+      </p>
+
+
+      <form id="loginForm">
+
+        <div class="form-group">
+          <label for="userId">아이디</label>
+
+          <input
+            type="text"
+            id="userId"
+            placeholder="아이디를 입력하세요"
+            required
+          >
+        </div>
+
+
+        <div class="form-group">
+          <label for="password">비밀번호</label>
+
+          <input
+            type="password"
+            id="password"
+            placeholder="비밀번호를 입력하세요"
+            required
+          >
+        </div>
+
+
+        <button type="submit" class="login-submit">
+          로그인
+        </button>
+
+      </form>
+
+      <div class="login-help">
+  계정이 없으신가요?
+  <a href="./signup.html">
+    회원가입
+  </a>
+</div>
+
+<div class="login-help">
+  <a href="./index.html">
+    ← 홈페이지로 돌아가기
+  </a>
+</div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+  document
+    .getElementById("loginForm")
+    .addEventListener("submit", function (event) {
+
+      event.preventDefault();
+
+      localStorage.setItem("isLoggedIn", "true");
+
+      localStorage.setItem("userName", "김민수");
+      localStorage.setItem("userAge", "17");
+      localStorage.setItem("userId", "minsu123");
+
+      localStorage.setItem("riskScore", "87");
+      localStorage.setItem("riskLevel", "위험");
+
+      localStorage.setItem(
+        "detectedRisk1",
+        "비정상 고액 결제"
+      );
+
+      localStorage.setItem(
+        "detectedRisk2",
+        "심야 결제"
+      );
+
+      window.location.href = "./index.html";
+
+    });
+</script>
+
+</body>
+</html>

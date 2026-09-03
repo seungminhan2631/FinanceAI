@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>FinanceAI - 회원정보</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="logo-box">
+      <h1>FinanceAI</h1>
+      <p>청소년 금융 이상행동 조기경보 AI</p>
+    </div>
+
+    <div class="user-box">
+      <span class="user-name">김민수</span>
+      <span class="user-age">17세</span>
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <button
+      class="back-button"
+      onclick="location.href='./index.html'"
+    >
+      ← 홈페이지로 돌아가기
+    </button>
+
+
+    <section class="profile-page-header">
+
+      <div>
+        <p class="page-label">
+          PROFILE
+        </p>
+
+        <h1>회원정보</h1>
+
+        <p>
+          계정 및 기본 정보를 확인하고 수정할 수 있습니다.
+        </p>
+      </div>
+
+    </section>
+
+
+    <section class="profile-layout">
+
+      <aside class="profile-side-card">
+
+        <div class="profile-large-avatar">
+          김
+        </div>
+
+        <h2 id="profileDisplayName">
+  김민수
+</h2>
+
+<p id="profileDisplayId">
+  minsu123
+</p>
+
+        <span class="profile-user-badge">
+          청소년 회원
+        </span>
+
+      </aside>
+
+
+      <section class="profile-main-card">
+
+        <div class="profile-section-title">
+
+          <div>
+            <h2>기본 정보</h2>
+
+            <p>
+              회원가입 시 등록한 정보입니다.
+            </p>
+          </div>
+
+          <button
+            id="editProfileButton"
+            class="profile-edit-button"
+          >
+            수정하기
+          </button>
+
+        </div>
+
+
+        <div class="profile-form-grid">
+
+          <div class="profile-form-group">
+
+            <label>
+              이름
+            </label>
+
+            <input
+              id="profileName"
+              type="text"
+              value="김민수"
+              disabled
+            >
+
+          </div>
+
+
+          <div class="profile-form-group">
+
+            <label>
+              생년월일
+            </label>
+
+            <input
+              id="profileBirth"
+              type="date"
+              value="2009-03-12"
+              disabled
+            >
+
+          </div>
+
+
+          <div class="profile-form-group">
+
+            <label>
+              아이디
+            </label>
+
+            <input
+              id="profileId"
+              type="text"
+              value="minsu123"
+              disabled
+            >
+
+          </div>
+
+
+          <div class="profile-form-group">
+
+            <label>
+              휴대폰 번호
+            </label>
+
+            <input
+              id="profilePhone"
+              type="text"
+              value="010-1234-5678"
+              disabled
+            >
+
+          </div>
+
+
+          <div class="profile-form-group">
+
+            <label>
+              거주 지역
+            </label>
+
+            <input
+              id="profileRegion"
+              type="text"
+              value="충청남도 천안시"
+              disabled
+            >
+
+          </div>
+
+
+          <div class="profile-form-group">
+
+            <label>
+              보호자 연락처
+            </label>
+
+            <input
+              id="guardianPhone"
+              type="text"
+              value="010-9876-5432"
+              disabled
+            >
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="profileSaveArea"
+          class="profile-save-area"
+        >
+
+          <button
+            id="cancelProfileButton"
+            class="profile-cancel-button"
+          >
+            취소
+          </button>
+
+          <button
+            id="saveProfileButton"
+            class="profile-save-button"
+          >
+            저장
+          </button>
+
+        </div>
+
+      </section>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+const userName =
+  localStorage.getItem("userName") || "김민수";
+
+const userId =
+  localStorage.getItem("userId") || "minsu123";
+
+  document.getElementById(
+  "profileDisplayName"
+).textContent = userName;
+
+document.getElementById(
+  "profileDisplayId"
+).textContent = userId;
+
+document.getElementById(
+  "profileName"
+).value = userName;
+
+document.getElementById(
+  "profileId"
+).value = userId;
+
+    const editButton =
+      document.getElementById("editProfileButton");
+
+    const saveArea =
+      document.getElementById("profileSaveArea");
+
+    const saveButton =
+      document.getElementById("saveProfileButton");
+
+    const cancelButton =
+      document.getElementById("cancelProfileButton");
+
+
+    const editableInputs = [
+      document.getElementById("profileName"),
+      document.getElementById("profileBirth"),
+      document.getElementById("profilePhone"),
+      document.getElementById("profileRegion"),
+      document.getElementById("guardianPhone")
+    ];
+
+
+    editButton.addEventListener(
+      "click",
+      function () {
+
+        editableInputs.forEach(
+          function (input) {
+
+            input.disabled = false;
+
+          }
+        );
+
+        saveArea.style.display = "flex";
+
+        editButton.style.display = "none";
+
+      }
+    );
+
+
+    saveButton.addEventListener(
+      "click",
+      function () {
+
+        editableInputs.forEach(
+          function (input) {
+
+            input.disabled = true;
+
+          }
+        );
+
+        saveArea.style.display = "none";
+
+        editButton.style.display = "inline-block";
+
+        alert("회원정보가 수정되었습니다.");
+
+      }
+    );
+
+
+    cancelButton.addEventListener(
+      "click",
+      function () {
+
+        editableInputs.forEach(
+          function (input) {
+
+            input.disabled = true;
+
+          }
+        );
+
+        saveArea.style.display = "none";
+
+        editButton.style.display = "inline-block";
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>

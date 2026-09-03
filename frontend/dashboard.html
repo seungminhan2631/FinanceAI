@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceAI</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="logo-box">
+      <h1>FinanceAI</h1>
+      <p>청소년 금융 이상행동 조기경보 AI</p>
+    </div>
+
+    <div class="user-box">
+      <span class="user-name">김민수</span>
+      <span class="user-age">17세</span>
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    <!-- 금융 위험도 -->
+    <section class="risk-card">
+
+      <div class="risk-info">
+        <p class="card-title">현재 금융 위험도</p>
+
+        <div class="risk-score-box">
+          <span id="riskScore">72</span>
+          <span class="score-total">/ 100</span>
+        </div>
+
+        <span id="riskLevel" class="risk-level">
+          주의
+        </span>
+      </div>
+
+
+      <div class="risk-message">
+
+        <h2>평소와 다른 결제 행동이 감지되었습니다.</h2>
+
+        <p>
+          최근 거래에서 이상 금융행동 패턴이 확인되었습니다.
+        </p>
+
+        <button id="detailButton">
+          탐지 내용 확인
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- 오늘 금융 현황 -->
+    <section class="summary-grid">
+
+      <article class="summary-card">
+        <p>오늘 결제 금액</p>
+        <strong id="todayAmount">
+          128,500원
+        </strong>
+      </article>
+
+
+      <article class="summary-card">
+        <p>오늘 결제 횟수</p>
+        <strong id="todayCount">
+          6건
+        </strong>
+      </article>
+
+
+      <article class="summary-card">
+        <p>이상행동 탐지</p>
+        <strong id="alertCount">
+          2건
+        </strong>
+      </article>
+
+    </section>
+
+
+    <!-- 최근 이상행동 -->
+    <section class="content-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>최근 이상행동</h2>
+          <p>
+            금융 이상행동 탐지 시스템이 감지한 결과입니다.
+          </p>
+        </div>
+
+        <button
+  class="text-button"
+  onclick="location.href='./transactions.html'"
+>
+  전체보기
+</button>
+
+      </div>
+
+      <div id="alertList" class="alert-list">
+
+        <!-- JavaScript에서 생성 -->
+
+      </div>
+
+    </section>
+
+
+    <!-- 최근 거래내역 -->
+    <section class="content-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>최근 거래내역</h2>
+          <p>
+            최근 승인된 카드 결제 내역입니다.
+          </p>
+        </div>
+
+        <button class="text-button">
+          전체보기
+        </button>
+
+      </div>
+
+      <div id="transactionList" class="transaction-list">
+
+        <!-- JavaScript에서 생성 -->
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script src="./js/main.js"></script>
+
+</body>
+</html>

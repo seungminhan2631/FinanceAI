@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinanceAI - 거래 상세</title>
+
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="logo-box">
+      <h1>FinanceAI</h1>
+      <p>청소년 금융 이상행동 조기경보 AI</p>
+    </div>
+
+    <div class="user-box">
+      <span class="user-name">김민수</span>
+      <span class="user-age">17세</span>
+    </div>
+  </header>
+
+
+  <main class="container">
+
+    <button
+      class="back-button"
+      onclick="location.href='./transactions.html'"
+    >
+      ← 거래내역으로 돌아가기
+    </button>
+
+
+    <section class="transaction-detail-header">
+
+      <div>
+        <p class="page-label">TRANSACTION DETAIL</p>
+
+        <h1 id="merchantName">
+          OO편의점
+        </h1>
+
+        <p class="detail-subtitle">
+          거래 정보와 이상행동 탐지 상태를 확인합니다.
+        </p>
+      </div>
+
+
+      <div class="transaction-detail-status">
+
+        <p>거래 상태</p>
+
+        <span
+          id="transactionRiskStatus"
+          class="transaction-status danger"
+        >
+          위험
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <section class="transaction-detail-grid">
+
+      <article class="detail-info-card">
+        <p>결제 금액</p>
+        <strong id="transactionAmount">
+          85,000원
+        </strong>
+      </article>
+
+      <article class="detail-info-card">
+        <p>결제 시간</p>
+        <strong id="transactionTime">
+          23:42
+        </strong>
+      </article>
+
+      <article class="detail-info-card">
+        <p>결제 날짜</p>
+        <strong id="transactionDate">
+          2026.08.25
+        </strong>
+      </article>
+
+      <article class="detail-info-card">
+        <p>업종</p>
+        <strong id="transactionCategory">
+          편의점
+        </strong>
+      </article>
+
+    </section>
+
+
+    <section class="content-card">
+
+      <div class="section-header">
+        <div>
+          <h2>거래 기본 정보</h2>
+          <p>현재 선택한 결제의 상세 정보입니다.</p>
+        </div>
+      </div>
+
+
+      <div class="transaction-detail-list">
+
+        <div class="transaction-detail-row">
+          <span>가맹점</span>
+          <strong id="detailMerchant">
+            OO편의점
+          </strong>
+        </div>
+
+        <div class="transaction-detail-row">
+          <span>업종</span>
+          <strong>
+            편의점
+          </strong>
+        </div>
+
+        <div class="transaction-detail-row">
+          <span>결제 지역</span>
+          <strong>
+            충청남도 천안시
+          </strong>
+        </div>
+
+        <div class="transaction-detail-row">
+          <span>결제 수단</span>
+          <strong>
+            신한카드 **** 1234
+          </strong>
+        </div>
+
+        <div class="transaction-detail-row">
+          <span>승인 상태</span>
+          <strong>
+            승인 완료
+          </strong>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <section class="content-card">
+
+      <div class="section-header">
+        <div>
+          <h2>이상행동 탐지 결과</h2>
+          <p>
+            해당 거래에서 탐지된 금융 이상행동입니다.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="transaction-risk-summary">
+
+        <div class="risk-score-small">
+
+          <p>위험도</p>
+
+          <strong>
+            87
+            <span>/ 100</span>
+          </strong>
+
+        </div>
+
+
+        <div class="risk-rule-list">
+
+          <span class="risk-rule danger-rule">
+            비정상 고액 결제
+          </span>
+
+          <span class="risk-rule danger-rule">
+            심야 결제
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <button
+        class="analysis-button"
+        onclick="location.href='./detail.html'"
+      >
+        상세 분석 확인
+      </button>
+
+    </section>
+
+
+    <section class="content-card">
+
+      <div class="section-header">
+
+        <div>
+          <h2>간단 분석</h2>
+          <p>
+            현재 거래와 평소 소비 행동을 비교합니다.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="quick-analysis-grid">
+
+        <article class="quick-analysis-card">
+
+          <p>평소 평균 결제 금액</p>
+
+          <strong>
+            12,500원
+          </strong>
+
+          <span class="quick-warning">
+            현재 6.8배 높음
+          </span>
+
+        </article>
+
+
+        <article class="quick-analysis-card">
+
+          <p>평소 주요 결제 시간</p>
+
+          <strong>
+            15:00 ~ 20:00
+          </strong>
+
+          <span class="quick-warning">
+            현재 23:42
+          </span>
+
+        </article>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</body>
+</html>
