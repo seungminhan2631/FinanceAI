@@ -29,24 +29,18 @@ function generateShortTxId() {
   return `tx_${timestamp.slice(-10)}_${randomStr}`;
 }
 
-// 업종 카테고리 매핑 (DB CHECK 제약조건 준수)
+// 업종 카테고리 매핑 (영문/한글 모두 지원)
 const CATEGORY_MAP = {
-  '식비': 'FOOD',
-  '음식점': 'FOOD',
-  '식당': 'FOOD',
-  '카페': 'CAFE',
-  '편의점': 'CONVENIENCE',
-  '쇼핑': 'SHOPPING',
-  '주얼리': 'SHOPPING',
-  '보석': 'SHOPPING',
-  '교통': '교통',
-  '게임': 'GAME_DIGITAL',
-  '교육': 'EDUCATION',
-  '학원': 'EDUCATION',
-  '도서': 'BOOK_STATIONERY',
-  '문구': 'BOOK_STATIONERY',
-  '상품권': 'GIFT_CARD',
-  '기타': '기타'
+  '식비': 'FOOD', '음식점': 'FOOD', '식당': 'FOOD', 'FOOD': 'FOOD',
+  '카페': 'CAFE', 'CAFE': 'CAFE',
+  '편의점': 'CONVENIENCE', 'CONVENIENCE': 'CONVENIENCE',
+  '쇼핑': 'SHOPPING', '주얼리': 'SHOPPING', '보석': 'SHOPPING', 'SHOPPING': 'SHOPPING',
+  '교통': 'TRANSPORT', 'TRANSPORT': 'TRANSPORT',
+  '게임': 'GAME_DIGITAL', 'GAME_DIGITAL': 'GAME_DIGITAL',
+  '교육': 'EDUCATION', '학원': 'EDUCATION', 'EDUCATION': 'EDUCATION',
+  '도서': 'BOOK_STATIONERY', '문구': 'BOOK_STATIONERY', 'BOOK_STATIONERY': 'BOOK_STATIONERY',
+  '상품권': 'GIFT_CARD', 'GIFT_CARD': 'GIFT_CARD',
+  '기타': 'ETC', 'ETC': 'ETC'
 };
 
 // 전역 상태 및 Readiness 플래그
