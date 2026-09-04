@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
+const bcrypt = require('bcrypt'); // 💡 비밀번호 암호화 패키지 추가
 
 // 요구사항 16번: FDS 서비스 및 AI 모듈 로드
 const { analyzeTransactionRisk } = require('./youth-fds-detection/src/services/finalRiskAnalysisService');
@@ -38,14 +39,14 @@ const CATEGORY_MAP = {
   '쇼핑': 'SHOPPING',
   '주얼리': 'SHOPPING',
   '보석': 'SHOPPING',
-  '교통': '교통',               // DB CHECK 제약조건 한글 '교통' 준수
+  '교통': '교통',
   '게임': 'GAME_DIGITAL',
   '교육': 'EDUCATION',
   '학원': 'EDUCATION',
   '도서': 'BOOK_STATIONERY',
   '문구': 'BOOK_STATIONERY',
   '상품권': 'GIFT_CARD',
-  '기타': '기타'                // DB CHECK 제약조건 한글 '기타' 준수
+  '기타': '기타'
 };
 
 // 전역 상태 및 Readiness 플래그
@@ -56,6 +57,18 @@ let isEngineReady = false;
 async function initAiEngine() {
   try {
     console.log('🔄 DB 테이블 점검 및 AI 엔진 초기화를 시작합니다...');
+
+    // users 테이블 자동 생성 (없을 경우)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        user_id VARCHAR(50) PRIMARY KEY,
+        password VARCHAR(255) NOT NULL,
+        name VARCHAR(50) NOT NULL,
+        birth_date DATE NOT NULL,
+        phone VARCHAR(20) NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `);
 
     // fds_alerts 테이블 자동 생성
     await pool.query(`
@@ -120,7 +133,88 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', engineReady: isEngineReady, message: 'FDS 백엔드 서버 상태 정상' });
 });
 
-// 2. 결제 발생 및 이상 탐지(FDS) API
+// ==========================================
+// 💡 [신규 추가] 2. 회원가입 API
+// ==========================================
+app.post('/api/auth/signup', async (req, res) => {
+  const { name, birthDate, userId, password, phone } = req.body;
+
+  if (!name || !birthDate || !userId || !password || !phone) {
+    return res.status(400).json({ success: false, error: '모든 필드(name, birthDate, userId, password, phone)를 입력해 주세요.' });
+  }
+
+  try {
+    // 아이디 중복 체크
+    const checkUser = await pool.query('SELECT user_id FROM users WHERE user_id = $1', [userId]);
+    if (checkUser.rows.length > 0) {
+      return res.status(409).json({ success: false, error: '이미 존재하는 아이디입니다.' });
+    }
+
+    // 비밀번호 암호화
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // DB 저장
+    const insertQuery = `
+      INSERT INTO users (user_id, password, name, birth_date, phone)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING user_id, name, birth_date, phone, created_at
+    `;
+    const result = await pool.query(insertQuery, [userId, hashedPassword, name, birthDate, phone]);
+
+    res.status(201).json({
+      success: true,
+      message: '회원가입이 완료되었습니다.',
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error('❌ 회원가입 처리 오류:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// 💡 [신규 추가] 3. 로그인 API
+// ==========================================
+app.post('/api/auth/login', async (req, res) => {
+  const { userId, password } = req.body;
+
+  if (!userId || !password) {
+    return res.status(400).json({ success: false, error: '아이디와 비밀번호를 모두 입력해 주세요.' });
+  }
+
+  try {
+    // 사용자 조회
+    const userResult = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 일치하지 않습니다.' });
+    }
+
+    const user = userResult.rows[0];
+
+    // 비밀번호 일치 여부 확인
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 일치하지 않습니다.' });
+    }
+
+    // 로그인 성공 응답
+    res.json({
+      success: true,
+      message: '로그인 성공',
+      user: {
+        userId: user.user_id,
+        name: user.name,
+        birthDate: user.birth_date,
+        phone: user.phone
+      }
+    });
+  } catch (err) {
+    console.error('❌ 로그인 처리 오류:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 4. 결제 발생 및 이상 탐지(FDS) API
 app.post('/api/transactions', async (req, res) => {
   const { userId, amount, merchantName, merchantCategory } = req.body;
 
@@ -144,7 +238,7 @@ app.post('/api/transactions', async (req, res) => {
   const newTransactionId = generateShortTxId();
 
   try {
-    // DB INSERT (소문자 merchant_name)
+    // DB INSERT
     const txResult = await pool.query(
       `INSERT INTO transactions (transaction_id, user_id, amount, merchant_name, merchant_category, transaction_datetime, transaction_status)
        VALUES ($1, $2, $3, $4, $5, NOW(), 'APPROVED') 
@@ -164,14 +258,13 @@ app.post('/api/transactions', async (req, res) => {
       [formattedUserId, newTx.transaction_datetime, newTx.transaction_id]
     );
 
-    // FDS 입력 데이터 규격 (hasValidDatetime 검증 안전 통과)
+    // FDS 입력 데이터 규격
     const currentTxData = {
       transaction_id: String(newTx.transaction_id),
       user_id: String(newTx.user_id),
       amount: Number(newTx.amount),
       merchant_name: String(merchantName).trim(),
       merchant_category: String(newTx.merchant_category).trim(),
-      // 💡 서버 현재 시간(Date.now())보다 미세하게 과거 시점으로 보장하여 validateBaseTransaction 통과
       transaction_datetime: new Date(Date.now() - 1000).toISOString(),
       transaction_status: 'APPROVED',
       transaction_type: 'CARD'
@@ -229,7 +322,7 @@ app.post('/api/transactions', async (req, res) => {
   }
 });
 
-// 3. 위험 탐지 내역 조회 API
+// 5. 위험 탐지 내역 조회 API
 app.get('/api/alerts', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -255,7 +348,7 @@ app.get('/api/alerts', async (req, res) => {
   }
 });
 
-// 4. 전체 거래 목록 조회 API
+// 6. 전체 거래 목록 조회 API
 app.get('/api/transactions', async (req, res) => {
   try {
     const result = await pool.query('SELECT transaction_id, user_id, amount, merchant_name, merchant_category, transaction_datetime, transaction_status FROM transactions ORDER BY transaction_datetime DESC');
