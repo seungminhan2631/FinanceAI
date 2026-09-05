@@ -59,9 +59,9 @@
         </div>
 
         <div>
-          <strong>김민수</strong>
-          <p>minsu123</p>
-        </div>
+  <strong id="profileMenuName">사용자</strong>
+  <p id="profileMenuId"></p>
+</div>
 
       </div>
 
@@ -369,8 +369,19 @@
     </p>
   </footer>
 
-  <script>
+ <script>
+const API_BASE_URL = "http://localhost:3000";
 
+const isLoggedIn =
+  localStorage.getItem("isLoggedIn") === "true";
+
+const LOGIN_USER_ID =
+  localStorage.getItem("userId");
+
+const CURRENT_USER_ID = "U002";
+
+
+// 화면 요소
 const homeRiskScore =
   document.getElementById("homeRiskScore");
 
@@ -389,58 +400,30 @@ const homeRisk1 =
 const homeRisk2 =
   document.getElementById("homeRisk2");
 
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn") === "true";
+const loginButton =
+  document.getElementById("loginButton");
 
-  const loginButton =
-    document.getElementById("loginButton");
+const logoutButton =
+  document.getElementById("logoutButton");
 
-  const logoutButton =
-    document.getElementById("logoutButton");
-
-  const profileArea =
+const profileArea =
   document.getElementById("profileArea");
 
-  const profileButton =
+const profileButton =
   document.getElementById("profileButton");
 
-  const profileMenu =
+const profileMenu =
   document.getElementById("profileMenu");
 
-  const startButton =
-    document.getElementById("startButton");
+const startButton =
+  document.getElementById("startButton");
 
-  const paymentButton =
-    document.getElementById("paymentButton");
-
-
-  if (isLoggedIn) {
-
-    const riskScore =
-  localStorage.getItem("riskScore") || "0";
-
-const riskLevel =
-  localStorage.getItem("riskLevel") || "정상";
-
-const detectedRisk1 =
-  localStorage.getItem("detectedRisk1") || "탐지 없음";
-
-const detectedRisk2 =
-  localStorage.getItem("detectedRisk2") || "탐지 없음";
+const paymentButton =
+  document.getElementById("paymentButton");
 
 
-homeRiskScore.textContent = riskScore;
-
-homeRiskLevel.textContent = riskLevel;
-
-homeRisk1.textContent = detectedRisk1;
-
-homeRisk2.textContent = detectedRisk2;
-
-
-guestRiskContent.style.display = "none";
-
-userRiskContent.style.display = "block";
+// 로그인 상태
+if (isLoggedIn && LOGIN_USER_ID) {
 
   loginButton.style.display = "none";
 
@@ -450,15 +433,26 @@ userRiskContent.style.display = "block";
   startButton.style.display = "none";
   paymentButton.style.display = "inline-flex";
 
+  guestRiskContent.style.display = "none";
+  userRiskContent.style.display = "block";
+
+  updateProfile();
+  loadHomeRisk();
+
 } else {
 
+  showGuestView();
+}
+
+
+// 비로그인 화면
+function showGuestView() {
+
   homeRiskScore.textContent = "?";
+  homeRiskLevel.textContent = "자녀의 위험도는?";
 
-homeRiskLevel.textContent = "나의 위험도는?";
-
-guestRiskContent.style.display = "block";
-
-userRiskContent.style.display = "none";
+  guestRiskContent.style.display = "block";
+  userRiskContent.style.display = "none";
 
   loginButton.style.display = "inline-flex";
 
@@ -467,39 +461,332 @@ userRiskContent.style.display = "none";
 
   startButton.style.display = "inline-flex";
   paymentButton.style.display = "none";
-
 }
 
 
-  logoutButton.addEventListener("click", function () {
+// 로그인 사용자 프로필
+function updateProfile() {
 
-    localStorage.removeItem("isLoggedIn");
+  const profileName =
+    document.querySelector(
+      ".profile-menu-user strong"
+    );
 
-    window.location.href = "./index.html";
+  const profileId =
+    document.querySelector(
+      ".profile-menu-user p"
+    );
 
-  });
+  const profileAvatar =
+    document.querySelector(
+      ".profile-menu-avatar"
+    );
 
-profileButton.addEventListener(
-  "click",
-  function (event) {
+  if (profileName) {
+    profileName.textContent =
+  localStorage.getItem("userName") || LOGIN_USER_ID;
+  }
 
-    event.stopPropagation();
+  if (profileId) {
+    profileId.textContent =
+      LOGIN_USER_ID;
+  }
 
-    profileMenu.classList.toggle("show");
+  if (profileButton) {
+    profileButton.textContent = "P";
+  }
+
+  if (profileAvatar) {
+    profileAvatar.textContent = "P";
+  }
+}
+
+
+// 실제 FDS 위험도 가져오기
+async function loadHomeRisk() {
+
+  try {
+
+    const [
+      transactionResponse,
+      alertResponse
+    ] = await Promise.all([
+
+      fetch(
+        `${API_BASE_URL}/api/transactions`
+      ),
+
+      fetch(
+        `${API_BASE_URL}/api/alerts`
+      )
+
+    ]);
+
+
+    const transactionData =
+      await transactionResponse.json();
+
+    const alertData =
+      await alertResponse.json();
+
+
+    if (
+      !transactionResponse.ok ||
+      !transactionData.success
+    ) {
+      throw new Error(
+        "거래내역 조회 실패"
+      );
+    }
+
+
+    if (
+      !alertResponse.ok ||
+      !alertData.success
+    ) {
+      throw new Error(
+        "FDS 알림 조회 실패"
+      );
+    }
+
+
+    // 현재 로그인 사용자 거래
+    const userTransactions =
+      (transactionData.transactions || [])
+        .filter((tx) => {
+
+          return String(
+            tx.user_id || tx.userId
+          ) === CURRENT_USER_ID;
+
+        })
+        .sort((a, b) => {
+
+          return new Date(
+            b.transaction_datetime
+          ) - new Date(
+            a.transaction_datetime
+          );
+
+        });
+
+
+    // 현재 로그인 사용자 알림
+    const userAlerts =
+      (alertData.alerts || [])
+        .filter((alert) => {
+
+          return String(
+            alert.user_id || alert.userId
+          ) === CURRENT_USER_ID;
+
+        })
+        .sort((a, b) => {
+
+          return new Date(b.created_at)
+            - new Date(a.created_at);
+
+        });
+
+
+    updateRiskDisplay(
+      userTransactions,
+      userAlerts
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "메인 위험도 조회 오류:",
+      error
+    );
+
+    homeRiskScore.textContent = "-";
+    homeRiskLevel.textContent =
+      "데이터 조회 실패";
+
+    homeRisk1.textContent =
+      "서버 연결을 확인해주세요.";
+
+    homeRisk2.style.display = "none";
+  }
+}
+
+
+// 위험도 화면 반영
+function updateRiskDisplay(
+  transactions,
+  alerts
+) {
+
+  // 거래가 하나도 없는 경우
+  if (transactions.length === 0) {
+
+    homeRiskScore.textContent = "0";
+    homeRiskLevel.textContent = "정상";
+
+    homeRisk1.textContent =
+      "아직 결제내역이 없습니다.";
+
+    homeRisk2.style.display = "none";
+
+    return;
+  }
+
+
+  // 가장 최근 거래
+  const latestTransaction =
+    transactions[0];
+
+
+  // 최근 거래에 해당하는 FDS 알림
+  const latestAlert =
+    alerts.find((alert) => {
+
+      return String(
+        alert.transaction_id
+      ) === String(
+        latestTransaction.transaction_id
+      );
+
+    });
+
+
+  // 최근 거래에 알림 없음 = 정상
+  if (!latestAlert) {
+
+    homeRiskScore.textContent = "0";
+    homeRiskLevel.textContent = "정상";
+
+    homeRisk1.textContent =
+      "최근 이상행동 탐지 없음";
+
+    homeRisk2.textContent =
+      "정상적인 결제 패턴입니다.";
+
+    homeRisk2.style.display = "block";
+
+    return;
+  }
+
+
+  const score =
+    Number(
+      latestAlert.risk_score || 0
+    );
+
+  const level =
+    String(
+      latestAlert.risk_level || ""
+    ).toUpperCase();
+
+
+  homeRiskScore.textContent = score;
+
+  homeRiskLevel.textContent =
+    convertRiskLevel(level);
+
+
+  // 최근 탐지 2건 표시
+  const recentAlerts =
+    alerts.slice(0, 2);
+
+
+  if (recentAlerts[0]) {
+
+    homeRisk1.textContent =
+      recentAlerts[0].reason
+      || "이상행동 탐지";
 
   }
-);
 
 
+  if (recentAlerts[1]) {
+
+    homeRisk2.textContent =
+      recentAlerts[1].reason
+      || "이상행동 탐지";
+
+    homeRisk2.style.display = "block";
+
+  } else {
+
+    homeRisk2.style.display = "none";
+  }
+}
+
+
+// FDS 상태 한글 변환
+function convertRiskLevel(level) {
+
+  if (level === "HIGH") {
+    return "위험";
+  }
+
+  if (level === "CAUTION") {
+    return "주의";
+  }
+
+  if (level === "MONITOR") {
+    return "모니터링";
+  }
+
+  return "정상";
+}
+
+
+// 로그아웃
+if (logoutButton) {
+
+  logoutButton.addEventListener(
+    "click",
+    function () {
+
+      localStorage.removeItem(
+        "isLoggedIn"
+      );
+
+      localStorage.removeItem(
+        "userId"
+      );
+
+      window.location.href =
+        "./index.html";
+    }
+  );
+}
+
+
+// 프로필 메뉴 열기
+if (profileButton) {
+
+  profileButton.addEventListener(
+    "click",
+    function (event) {
+
+      event.stopPropagation();
+
+      profileMenu.classList.toggle(
+        "show"
+      );
+    }
+  );
+}
+
+
+// 화면 다른 곳 클릭 시 프로필 닫기
 document.addEventListener(
   "click",
   function () {
 
-    profileMenu.classList.remove("show");
-
+    if (profileMenu) {
+      profileMenu.classList.remove(
+        "show"
+      );
+    }
   }
 );
-
 </script>
 
 </body>

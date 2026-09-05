@@ -19,8 +19,8 @@
     </div>
 
     <div class="user-box">
-      <span class="user-name">김민수</span>
-      <span class="user-age">17세</span>
+      <span id="header-user-name">사용자</span>
+<span id="header-user-age">-세</span>
     </div>
 
   </header>
@@ -62,15 +62,13 @@
         </div>
 
         <h2 id="profileDisplayName">
-  김민수
+  사용자
 </h2>
 
-<p id="profileDisplayId">
-  minsu123
-</p>
+<p id="profileDisplayId"></p>
 
         <span class="profile-user-badge">
-          청소년 회원
+          보호자 회원
         </span>
 
       </aside>
@@ -107,11 +105,11 @@
             </label>
 
             <input
-              id="profileName"
-              type="text"
-              value="김민수"
-              disabled
-            >
+  id="profileName"
+  type="text"
+  value=""
+  disabled
+>
 
           </div>
 
@@ -141,7 +139,7 @@
             <input
               id="profileId"
               type="text"
-              value="minsu123"
+              value=" "
               disabled
             >
 
@@ -229,10 +227,58 @@
   <script>
 
 const userName =
-  localStorage.getItem("userName") || "김민수";
+  localStorage.getItem("userName") || "사용자";
 
 const userId =
-  localStorage.getItem("userId") || "minsu123";
+  localStorage.getItem("userId") || "";
+
+// 큰 이름
+const profileDisplayName =
+  document.getElementById("profileDisplayName");
+
+if (profileDisplayName) {
+  profileDisplayName.textContent = userName;
+}
+
+// 큰 아이디
+const profileDisplayId =
+  document.getElementById("profileDisplayId");
+
+if (profileDisplayId) {
+  profileDisplayId.textContent = userId;
+}
+
+// 프로필 메뉴 이름
+const profileMenuName =
+  document.getElementById("profileMenuName");
+
+if (profileMenuName) {
+  profileMenuName.textContent = userName;
+}
+
+// 프로필 메뉴 아이디
+const profileMenuId =
+  document.getElementById("profileMenuId");
+
+if (profileMenuId) {
+  profileMenuId.textContent = userId;
+}
+
+// 회원정보 입력칸 이름
+const profileNameInput =
+  document.getElementById("profileName");
+
+if (profileNameInput) {
+  profileNameInput.value = userName;
+}
+
+// 회원정보 입력칸 아이디
+const profileIdInput =
+  document.getElementById("profileId");
+
+if (profileIdInput) {
+  profileIdInput.value = userId;
+}
 
   document.getElementById(
   "profileDisplayName"
@@ -334,6 +380,8 @@ document.getElementById(
     );
 
   </script>
+
+<script src="./js/user-header.js"></script>
 
 </body>
 </html>
