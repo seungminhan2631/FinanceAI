@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
-const bcrypt = require('bcrypt'); // 💡 비밀번호 암호화 패키지 추가
+const bcrypt = require('bcrypt');
 
 // 요구사항 16번: FDS 서비스 및 AI 모듈 로드
 const { analyzeTransactionRisk } = require('./youth-fds-detection/src/services/finalRiskAnalysisService');
@@ -29,7 +29,7 @@ function generateShortTxId() {
   return `tx_${timestamp.slice(-10)}_${randomStr}`;
 }
 
-// 업종 카테고리 매핑 (영문/한글 모두 지원)
+// 업종 카테고리 매핑 (영문/한글 지원 및 DB CHECK 제약조건 준수)
 const CATEGORY_MAP = {
   '식비': 'FOOD', '음식점': 'FOOD', '식당': 'FOOD', 'FOOD': 'FOOD',
   '카페': 'CAFE', 'CAFE': 'CAFE',
@@ -43,38 +43,22 @@ const CATEGORY_MAP = {
   '기타': 'ETC', 'ETC': 'ETC'
 };
 
+// risk_alerts 테이블 CHECK 제약조건('NORMAL' | 'WARNING' | 'DANGER') 매핑
+const RISK_LEVEL_MAP = {
+  'HIGH': 'DANGER',
+  'CAUTION': 'WARNING',
+  'LOW': 'NORMAL',
+  'NORMAL': 'NORMAL'
+};
+
 // 전역 상태 및 Readiness 플래그
 let globalReferenceScores = [];
 let isEngineReady = false;
 
-// DB 및 AI 엔진 초기화
+// DB 및 AI 엔진 초기화 (DB 테이블은 01_schema.sql로 이미 존재하므로 CREATE TABLE 삭제)
 async function initAiEngine() {
   try {
-    console.log('🔄 DB 테이블 점검 및 AI 엔진 초기화를 시작합니다...');
-
-    // users 테이블 자동 생성 (없을 경우)
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        user_id VARCHAR(50) PRIMARY KEY,
-        password VARCHAR(255) NOT NULL,
-        name VARCHAR(50) NOT NULL,
-        birth_date DATE NOT NULL,
-        phone VARCHAR(20) NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-      );
-    `);
-
-    // fds_alerts 테이블 자동 생성
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS fds_alerts (
-        alert_id SERIAL PRIMARY KEY,
-        transaction_id VARCHAR(20) REFERENCES transactions(transaction_id),
-        risk_score INT,
-        risk_level VARCHAR(20),
-        reason TEXT,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-      );
-    `);
+    console.log('🔄 DB 거래 데이터 조회 및 AI 엔진 초기화를 시작합니다...');
 
     // DB 거래 내역 로드
     const result = await pool.query('SELECT transaction_id, user_id, amount, merchant_name, merchant_category, transaction_datetime, transaction_status FROM transactions ORDER BY transaction_datetime ASC');
@@ -127,9 +111,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', engineReady: isEngineReady, message: 'FDS 백엔드 서버 상태 정상' });
 });
 
-// ==========================================
-// 💡 [신규 추가] 2. 회원가입 API
-// ==========================================
+// 2. 회원가입 API
 app.post('/api/auth/signup', async (req, res) => {
   const { name, birthDate, userId, password, phone } = req.body;
 
@@ -144,13 +126,12 @@ app.post('/api/auth/signup', async (req, res) => {
       return res.status(409).json({ success: false, error: '이미 존재하는 아이디입니다.' });
     }
 
-    // 비밀번호 암호화
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // DB 저장
+    // password -> password_hash, user_id를 login_id에도 동일하게 저장
     const insertQuery = `
-      INSERT INTO users (user_id, password, name, birth_date, phone)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO users (user_id, login_id, password_hash, name, birth_date, phone)
+      VALUES ($1, $1, $2, $3, $4, $5)
       RETURNING user_id, name, birth_date, phone, created_at
     `;
     const result = await pool.query(insertQuery, [userId, hashedPassword, name, birthDate, phone]);
@@ -166,9 +147,7 @@ app.post('/api/auth/signup', async (req, res) => {
   }
 });
 
-// ==========================================
-// 💡 [신규 추가] 3. 로그인 API
-// ==========================================
+// 3. 로그인 API
 app.post('/api/auth/login', async (req, res) => {
   const { userId, password } = req.body;
 
@@ -185,8 +164,8 @@ app.post('/api/auth/login', async (req, res) => {
 
     const user = userResult.rows[0];
 
-    // 비밀번호 일치 여부 확인
-    const isMatch = await bcrypt.compare(password, user.password);
+    // 비밀번호 비교 (password_hash 컬럼 사용)
+    const isMatch = await bcrypt.compare(password, user.password_hash);
     if (!isMatch) {
       return res.status(401).json({ success: false, error: '아이디 또는 비밀번호가 일치하지 않습니다.' });
     }
@@ -282,23 +261,26 @@ app.post('/api/transactions', async (req, res) => {
       globalReferenceScores
     );
 
-    // Alert 저장
+    // Alert 저장 (risk_alerts 테이블로 저장)
     if (analysisResult.available && analysisResult.risk && analysisResult.risk.level) {
-      const riskLevel = analysisResult.risk.level;
-      if (riskLevel === 'HIGH' || riskLevel === 'CAUTION') {
+      const rawRiskLevel = analysisResult.risk.level;
+      if (rawRiskLevel === 'HIGH' || rawRiskLevel === 'CAUTION') {
         try {
           const detectedRuleNames = analysisResult.rule?.detectedRules?.map(r => r.ruleName || r.ruleId).join(', ');
           const alertReason = detectedRuleNames 
-            ? `[${riskLevel}] 탐지 규칙: ${detectedRuleNames}`
-            : `[${riskLevel}] AI 종합 위험도 초과`;
+            ? `[${rawRiskLevel}] 탐지 규칙: ${detectedRuleNames}`
+            : `[${rawRiskLevel}] AI 종합 위험도 초과`;
+
+          // risk_alerts CHECK 제약조건(NORMAL, WARNING, DANGER)으로 매핑
+          const mappedRiskLevel = RISK_LEVEL_MAP[rawRiskLevel] || 'NORMAL';
 
           await pool.query(
-            `INSERT INTO fds_alerts (transaction_id, risk_score, risk_level, reason)
-             VALUES ($1, $2, $3, $4)`,
-            [newTx.transaction_id, analysisResult.risk.combinedScore, riskLevel, alertReason]
+            `INSERT INTO risk_alerts (transaction_id, user_id, final_score, risk_level, reason_message)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [newTx.transaction_id, newTx.user_id, analysisResult.risk.combinedScore, mappedRiskLevel, alertReason]
           );
         } catch (alertErr) {
-          console.warn('⚠️ fds_alerts DB 저장 중 경고:', alertErr.message);
+          console.warn('⚠️ risk_alerts DB 저장 중 경고:', alertErr.message);
         }
       }
     }
@@ -316,30 +298,34 @@ app.post('/api/transactions', async (req, res) => {
   }
 });
 
-// 5. 위험 탐지 내역 조회 API
+// 5. 위험 탐지 내역 조회 API (risk_alerts 참조)
 app.get('/api/alerts', async (req, res) => {
   try {
     const result = await pool.query(`
       SELECT 
-        a.alert_id,
-        a.risk_score,
+        a.id,
+        a.final_score,
         a.risk_level,
-        a.reason,
+        a.reason_message,
         a.created_at,
         t.transaction_id,
         t.user_id,
         t.amount,
         t.merchant_name,
         t.merchant_category
-      FROM fds_alerts a
+      FROM risk_alerts a
       JOIN transactions t ON a.transaction_id = t.transaction_id
       ORDER BY a.created_at DESC
     `);
     res.json({ success: true, alerts: result.rows });
   } catch (err) {
-    console.error(err);
+    console.error('❌ Alerts API 처리 중 예외 발생:', err);
     res.status(500).json({ success: false, error: err.message });
   }
+});
+
+app.get('/', (req, res) => {
+  res.send('Server is running!');
 });
 
 // 6. 전체 거래 목록 조회 API
