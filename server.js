@@ -91,7 +91,7 @@ async function initAiEngine() {
     isEngineReady = true;
     console.log(`🤖 AI Engine Trained: 총 ${usableFeatureCount}건의 Feature 데이터로 Isolation Forest 학습 및 referenceScores 구축 완료!`);
   } catch (err) {
-    console.error('❌ AI Engine / DB 초기화 중 오류 발생:', err.message);
+    console.error('❌ AI Engine / DB 초기화 중 오류 발생:', JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
     process.exit(1);
   }
 }
