@@ -13,9 +13,12 @@
   <header class="landing-header">
     <div class="landing-nav">
 
-      <div class="landing-logo">
-        FinanceAI
-      </div>
+      <a class="landing-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <nav class="landing-menu">
         <a href="#service">서비스 소개</a>
@@ -40,10 +43,12 @@
 
     <button
       id="profileButton"
+      aria-label="회원정보 메뉴"
+      aria-controls="profileMenu"
       class="profile-button"
       type="button"
     >
-      김
+      -
     </button>
 
 
@@ -55,13 +60,13 @@
       <div class="profile-menu-user">
 
         <div class="profile-menu-avatar">
-          김
+          -
         </div>
 
         <div>
-          <strong>김민수</strong>
-          <p>minsu123</p>
-        </div>
+  <strong id="profileMenuName">사용자</strong>
+  <p id="profileMenuId"></p>
+</div>
 
       </div>
 
@@ -73,13 +78,7 @@
         회원정보 보기
       </a>
 
-      <a href="./profile.html">
-        회원정보 수정
-      </a>
 
-      <a href="./profile.html">
-        설정
-      </a>
 
     </div>
 
@@ -109,7 +108,7 @@
       <div class="hero-content">
 
         <span class="hero-badge">
-          청소년 금융 이상행동 조기경보 AI
+          청소년 금융 이상행동 경보 AI
         </span>
 
         <h1>
@@ -119,8 +118,7 @@
 
         <p>
           청소년의 평소 결제 패턴과 시간, 금액, 업종 등의 맥락을 분석하여
-          카드 도용, 대리결제, 갈취 및 강요 등 비정상 금융행동을
-          조기에 탐지합니다.
+          카드 도용, 대리결제, 갈취 및 강요 등 비정상 금융행동을 탐지합니다.
         </p>
 
 
@@ -160,7 +158,7 @@
         <div class="demo-card">
 
   <p class="demo-title">
-    현재 금융 위험도
+    이번달 거래 평균 위험점수
   </p>
 
   <div class="demo-score">
@@ -183,6 +181,7 @@
     나의 위험도는?
   </span>
 
+  <p id="homeAverageDescription" class="feature-note">분석 가능한 이번달 거래의 평균 점수입니다.</p>
   <div class="demo-divider"></div>
 
 
@@ -212,28 +211,28 @@
     style="display: none;"
   >
 
-    <p class="demo-alert-title">
-      이상 금융행동 감지
+    <p id="homeRecentTitle" class="demo-alert-title">
+      최근 주의·위험 거래
     </p>
 
     <div
       id="homeRisk1"
       class="demo-alert"
     >
-      비정상 고액 결제
+      불러오는 중입니다.
     </div>
 
     <div
       id="homeRisk2"
       class="demo-alert"
     >
-      심야 결제
+      -
     </div>
 
   </div>
 
 </div>
-
+      </div>
     </section>
 
 
@@ -365,142 +364,12 @@
     <strong>FinanceAI</strong>
 
     <p>
-      청소년 금융 이상행동 조기경보 AI
+      청소년 금융 이상행동 경보 AI
     </p>
   </footer>
 
-  <script>
-
-const homeRiskScore =
-  document.getElementById("homeRiskScore");
-
-const homeRiskLevel =
-  document.getElementById("homeRiskLevel");
-
-const guestRiskContent =
-  document.getElementById("guestRiskContent");
-
-const userRiskContent =
-  document.getElementById("userRiskContent");
-
-const homeRisk1 =
-  document.getElementById("homeRisk1");
-
-const homeRisk2 =
-  document.getElementById("homeRisk2");
-
-  const isLoggedIn =
-    localStorage.getItem("isLoggedIn") === "true";
-
-  const loginButton =
-    document.getElementById("loginButton");
-
-  const logoutButton =
-    document.getElementById("logoutButton");
-
-  const profileArea =
-  document.getElementById("profileArea");
-
-  const profileButton =
-  document.getElementById("profileButton");
-
-  const profileMenu =
-  document.getElementById("profileMenu");
-
-  const startButton =
-    document.getElementById("startButton");
-
-  const paymentButton =
-    document.getElementById("paymentButton");
-
-
-  if (isLoggedIn) {
-
-    const riskScore =
-  localStorage.getItem("riskScore") || "0";
-
-const riskLevel =
-  localStorage.getItem("riskLevel") || "정상";
-
-const detectedRisk1 =
-  localStorage.getItem("detectedRisk1") || "탐지 없음";
-
-const detectedRisk2 =
-  localStorage.getItem("detectedRisk2") || "탐지 없음";
-
-
-homeRiskScore.textContent = riskScore;
-
-homeRiskLevel.textContent = riskLevel;
-
-homeRisk1.textContent = detectedRisk1;
-
-homeRisk2.textContent = detectedRisk2;
-
-
-guestRiskContent.style.display = "none";
-
-userRiskContent.style.display = "block";
-
-  loginButton.style.display = "none";
-
-  profileArea.style.display = "block";
-  logoutButton.style.display = "inline-block";
-
-  startButton.style.display = "none";
-  paymentButton.style.display = "inline-flex";
-
-} else {
-
-  homeRiskScore.textContent = "?";
-
-homeRiskLevel.textContent = "나의 위험도는?";
-
-guestRiskContent.style.display = "block";
-
-userRiskContent.style.display = "none";
-
-  loginButton.style.display = "inline-flex";
-
-  profileArea.style.display = "none";
-  logoutButton.style.display = "none";
-
-  startButton.style.display = "inline-flex";
-  paymentButton.style.display = "none";
-
-}
-
-
-  logoutButton.addEventListener("click", function () {
-
-    localStorage.removeItem("isLoggedIn");
-
-    window.location.href = "./index.html";
-
-  });
-
-profileButton.addEventListener(
-  "click",
-  function (event) {
-
-    event.stopPropagation();
-
-    profileMenu.classList.toggle("show");
-
-  }
-);
-
-
-document.addEventListener(
-  "click",
-  function () {
-
-    profileMenu.classList.remove("show");
-
-  }
-);
-
-</script>
+ <script src="./js/common.js"></script>
+<script src="./js/home.js"></script>
 
 </body>
 </html>

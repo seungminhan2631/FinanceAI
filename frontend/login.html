@@ -14,9 +14,12 @@
 
     <section class="login-card">
 
-      <div class="login-logo">
-        FinanceAI
-      </div>
+      <a class="login-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <h1>로그인</h1>
 
@@ -33,6 +36,7 @@
           <input
             type="text"
             id="userId"
+            autocomplete="username"
             placeholder="아이디를 입력하세요"
             required
           >
@@ -45,6 +49,7 @@
           <input
             type="password"
             id="password"
+            autocomplete="current-password"
             placeholder="비밀번호를 입력하세요"
             required
           >
@@ -55,6 +60,7 @@
           로그인
         </button>
 
+        <p id="authStatus" class="form-status" role="status" aria-live="polite"></p>
       </form>
 
       <div class="login-help">
@@ -75,36 +81,8 @@
   </main>
 
 
-  <script>
-  document
-    .getElementById("loginForm")
-    .addEventListener("submit", function (event) {
-
-      event.preventDefault();
-
-      localStorage.setItem("isLoggedIn", "true");
-
-      localStorage.setItem("userName", "김민수");
-      localStorage.setItem("userAge", "17");
-      localStorage.setItem("userId", "minsu123");
-
-      localStorage.setItem("riskScore", "87");
-      localStorage.setItem("riskLevel", "위험");
-
-      localStorage.setItem(
-        "detectedRisk1",
-        "비정상 고액 결제"
-      );
-
-      localStorage.setItem(
-        "detectedRisk2",
-        "심야 결제"
-      );
-
-      window.location.href = "./index.html";
-
-    });
-</script>
+  <script src="./js/common.js"></script>
+<script src="./js/auth.js"></script>
 
 </body>
 </html>

@@ -11,32 +11,38 @@
 <body>
 
   <header class="topbar">
-    <div class="logo-box">
-      <h1>FinanceAI</h1>
-      <p>청소년 금융 이상행동 조기경보 AI</p>
-    </div>
+    <a class="logo-box logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+      <span class="brand-symbol" aria-hidden="true">
+        <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+      </span>
+      <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+    </a>
 
     <div class="user-box">
-      <span class="user-name">김민수</span>
-      <span class="user-age">17세</span>
+      <span id="header-user-name">사용자</span>
+      <span id="header-user-age">-세</span>
     </div>
   </header>
 
 
   <main class="container">
+    <nav class="page-navigation" aria-label="페이지 이동">
+      <button class="navigation-button" type="button" data-back-fallback="./transactions.html">← 이전 화면</button>
+      <a class="navigation-button" href="./index.html">홈페이지</a>
+    </nav>
 
-    <button class="back-button" onclick="history.back()">
-      ← 대시보드로 돌아가기
-    </button>
+    <a id="detailBack" class="back-button" href="./dashboard.html">← 대시보드로 돌아가기</a>
 
 
+    <p id="pageStatus" class="page-status" role="status">분석 정보를 불러오는 중입니다.</p>
+    <div id="detailContent" hidden>
     <section class="detail-header-card">
 
       <div>
         <p class="card-title">이상행동 상세 분석</p>
 
         <h2>
-          평소와 다른 금융 행동이 감지되었습니다.
+          분석 정보를 불러오는 중입니다.
         </h2>
 
         <p class="detail-subtitle">
@@ -50,12 +56,12 @@
         <p>종합 위험도</p>
 
         <div class="detail-risk-score">
-          87
+          -
           <span>/ 100</span>
         </div>
 
-        <strong class="danger-badge">
-          위험
+        <strong class="transaction-status unavailable">
+          -
         </strong>
 
       </div>
@@ -67,24 +73,19 @@
 
       <article class="detail-info-card">
         <p>결제 금액</p>
-        <strong>85,000원</strong>
+        <strong>-</strong>
       </article>
 
       <article class="detail-info-card">
         <p>결제 시간</p>
-        <strong>23:42</strong>
+        <strong>-</strong>
       </article>
 
       <article class="detail-info-card">
         <p>가맹점</p>
-        <strong>OO편의점</strong>
+        <strong>-</strong>
       </article>
-
-      <article class="detail-info-card">
-        <p>결제 지역</p>
-        <strong>천안시</strong>
-      </article>
-
+      
     </section>
 
 
@@ -103,59 +104,7 @@
       </div>
 
 
-      <div class="detect-list">
-
-        <div class="detect-item">
-
-          <div>
-            <h3>비정상 고액 결제</h3>
-
-            <p>
-              최근 30일 평균 결제 금액보다 약 6.8배 높은 거래입니다.
-            </p>
-          </div>
-
-          <span class="detect-score">
-            +35
-          </span>
-
-        </div>
-
-
-        <div class="detect-item">
-
-          <div>
-            <h3>심야 결제</h3>
-
-            <p>
-              평소 거의 결제가 발생하지 않는 심야 시간대의 거래입니다.
-            </p>
-          </div>
-
-          <span class="detect-score">
-            +22
-          </span>
-
-        </div>
-
-
-        <div class="detect-item">
-
-          <div>
-            <h3>새로운 소비 패턴</h3>
-
-            <p>
-              기존 소비 이력과 비교했을 때 평소와 다른 행동이 확인되었습니다.
-            </p>
-          </div>
-
-          <span class="detect-score">
-            +18
-          </span>
-
-        </div>
-
-      </div>
+      <div class="detect-list"></div>
 
     </section>
 
@@ -167,8 +116,8 @@
         <div>
           <h2>평소 소비 패턴과 비교</h2>
 
-          <p>
-            최근 거래 데이터와 현재 거래를 비교합니다.
+          <p id="comparisonDescription">
+            선택한 거래 이전의 이력과 비교합니다.
           </p>
         </div>
 
@@ -182,9 +131,9 @@
           <span>평소 평균 결제 금액</span>
 
           <div>
-            <strong>12,500원</strong>
+            <strong>-</strong>
             <span class="comparison-arrow">→</span>
-            <strong class="danger-text">85,000원</strong>
+            <strong>-</strong>
           </div>
 
         </div>
@@ -195,9 +144,9 @@
           <span>주요 결제 시간</span>
 
           <div>
-            <strong>15:00 ~ 20:00</strong>
+            <strong>-</strong>
             <span class="comparison-arrow">→</span>
-            <strong class="danger-text">23:42</strong>
+            <strong>-</strong>
           </div>
 
         </div>
@@ -208,9 +157,9 @@
           <span>주요 이용 업종</span>
 
           <div>
-            <strong>음식점 / 카페</strong>
+            <strong>-</strong>
             <span class="comparison-arrow">→</span>
-            <strong class="danger-text">편의점</strong>
+            <strong>-</strong>
           </div>
 
         </div>
@@ -226,49 +175,25 @@
         <span class="ai-icon">AI</span>
 
         <div>
-          <h2>AI 종합 분석</h2>
-          <p>거래 맥락과 과거 소비 행동을 종합한 분석 결과입니다.</p>
+          <h2>FDS 분석 요약</h2>
+          <p>거래의 최종 위험등급과 탐지 사유를 확인합니다.</p>
         </div>
       </div>
 
 
-      <div class="ai-message">
-
-        현재 거래는 최근 30일 평균 결제 금액보다 매우 높은 금액이며,
-        사용자의 일반적인 결제 시간대를 벗어난 심야 시간에 발생했습니다.
-        여러 이상행동 요소가 동시에 확인되어 평소와 다른 금융행동일 가능성이 높습니다.
-
-      </div>
+      <div class="ai-message">-</div>
 
     </section>
 
 
-    <section class="action-card">
+    <p id="followupNote" class="content-card" hidden>주의·위험으로 탐지된 거래입니다. 실제 결제 내역을 확인해주세요.</p>
 
-      <div>
-        <h2>확인이 필요한 거래입니다.</h2>
-
-        <p>
-          본인이 직접 사용한 거래인지 확인해주세요.
-        </p>
-      </div>
-
-
-      <div class="action-buttons">
-
-        <button class="normal-button">
-          본인 결제입니다
-        </button>
-
-        <button class="danger-button">
-          내가 한 결제가 아닙니다
-        </button>
-
-      </div>
-
-    </section>
-
+    </div>
   </main>
 
+  <script src="./js/common.js"></script>
+  <script src="./js/detail.js"></script>
+  <script src="./js/user-header.js"></script>
+  
 </body>
 </html>

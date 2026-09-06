@@ -14,14 +14,17 @@
 
     <section class="login-card signup-card">
 
-      <div class="login-logo">
-        FinanceAI
-      </div>
+      <a class="login-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <h1>회원가입</h1>
 
       <p class="login-description">
-        FinanceAI 서비스를 이용하기 위한 기본 정보를 입력해주세요.
+        자녀의 금융 이상행동을 확인하기 위한 기본 정보를 입력해주세요.
       </p>
 
       <form id="signupForm">
@@ -53,6 +56,7 @@
           <input
             type="text"
             id="signupId"
+            autocomplete="username"
             placeholder="사용할 아이디를 입력하세요"
             required
           >
@@ -64,6 +68,7 @@
           <input
             type="password"
             id="signupPassword"
+            autocomplete="new-password"
             placeholder="비밀번호를 입력하세요"
             required
           >
@@ -75,6 +80,7 @@
           <input
             type="password"
             id="passwordConfirm"
+            autocomplete="new-password"
             placeholder="비밀번호를 다시 입력하세요"
             required
           >
@@ -91,16 +97,6 @@
           >
         </div>
 
-        <div class="form-group">
-          <label for="guardianPhone">보호자 연락처</label>
-
-          <input
-            type="tel"
-            id="guardianPhone"
-            placeholder="010-0000-0000"
-          >
-        </div>
-
         <div class="terms-box">
           <label>
             <input type="checkbox" id="terms" required>
@@ -112,6 +108,7 @@
           회원가입
         </button>
 
+        <p id="authStatus" class="form-status" role="status" aria-live="polite"></p>
       </form>
 
       <div class="login-help">
@@ -125,29 +122,8 @@
 
   </main>
 
-  <script>
-    document
-      .getElementById("signupForm")
-      .addEventListener("submit", function(event) {
-
-        event.preventDefault();
-
-        const password =
-          document.getElementById("signupPassword").value;
-
-        const passwordConfirm =
-          document.getElementById("passwordConfirm").value;
-
-        if (password !== passwordConfirm) {
-          alert("비밀번호가 일치하지 않습니다.");
-          return;
-        }
-
-        alert("회원가입이 완료되었습니다.");
-
-        window.location.href = "./login.html";
-      });
-  </script>
+  <script src="./js/common.js"></script>
+<script src="./js/auth.js"></script>
 
 </body>
 </html>

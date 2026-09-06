@@ -12,20 +12,26 @@
 
   <header class="topbar">
 
-    <div class="logo-box">
-      <h1>FinanceAI</h1>
-      <p>청소년 금융 이상행동 조기경보 AI</p>
-    </div>
+    <a class="logo-box logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+      <span class="brand-symbol" aria-hidden="true">
+        <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+      </span>
+      <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+    </a>
 
     <div class="user-box">
-      <span class="user-name">김민수</span>
-      <span class="user-age">17세</span>
+      <span id="header-user-name">사용자</span>
+<span id="header-user-age">-세</span>
     </div>
 
   </header>
 
 
   <main class="container">
+    <nav class="page-navigation" aria-label="페이지 이동">
+      <button class="navigation-button" type="button" data-back-fallback="./dashboard.html">← 이전 화면</button>
+      <a class="navigation-button" href="./index.html">홈페이지</a>
+    </nav>
 
     <div class="page-top">
 
@@ -51,17 +57,17 @@
 
       <article class="transaction-summary-card">
         <p>오늘 결제 금액</p>
-        <strong>128,500원</strong>
+        <strong id="todayAmount">-</strong>
       </article>
 
       <article class="transaction-summary-card">
         <p>오늘 결제 횟수</p>
-        <strong>6건</strong>
+        <strong id="todayCount">-</strong>
       </article>
 
       <article class="transaction-summary-card">
-        <p>이상행동 탐지</p>
-        <strong class="danger-text">2건</strong>
+        <p>이번달 이상행동 탐지</p>
+        <strong id="detectedCount">-</strong>
       </article>
 
     </section>
@@ -73,28 +79,30 @@
 
         <div>
           <h2>전체 거래</h2>
-          <p>최근 승인된 거래를 최신순으로 표시합니다.</p>
+          <p>전체 거래를 최신순으로 표시합니다.</p>
         </div>
 
 
         <div class="filter-buttons">
 
-          <button class="filter-button active">
+          <button class="filter-button active" data-filter="all" aria-pressed="true" disabled>
             전체
           </button>
 
-          <button class="filter-button">
+          <button class="filter-button" data-filter="normal" aria-pressed="false" disabled>
             정상
           </button>
 
-          <button class="filter-button">
+          <button class="filter-button" data-filter="warning" aria-pressed="false" disabled>
             주의
           </button>
 
-          <button class="filter-button">
+          <button class="filter-button" data-filter="danger" aria-pressed="false" disabled>
             위험
           </button>
 
+          <button class="filter-button" data-filter="monitor" aria-pressed="false" disabled>관찰</button>
+          <button class="filter-button" data-filter="unavailable" aria-pressed="false" disabled>분석 불가</button>
         </div>
 
       </div>
@@ -110,181 +118,15 @@
       </div>
 
 
-      <div class="full-transaction-list">
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=1'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>OO편의점</strong>
-            <span>편의점</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>23:42</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            85,000원
-          </div>
-
-          <div>
-            <span class="transaction-status danger">
-              위험
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=2'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>XX게임</strong>
-            <span>게임 / 디지털 콘텐츠</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>23:36</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            32,000원
-          </div>
-
-          <div>
-            <span class="transaction-status warning">
-              주의
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=3'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>ABC카페</strong>
-            <span>카페</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>18:20</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            6,500원
-          </div>
-
-          <div>
-            <span class="transaction-status normal">
-              정상
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=4'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>OO분식</strong>
-            <span>음식점</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>16:15</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            5,000원
-          </div>
-
-          <div>
-            <span class="transaction-status normal">
-              정상
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=5'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>버스 교통카드</strong>
-            <span>교통</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>14:32</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            1,500원
-          </div>
-
-          <div>
-            <span class="transaction-status normal">
-              정상
-            </span>
-          </div>
-
-        </div>
-
-
-        <div
-          class="full-transaction-item"
-          onclick="location.href='./transaction-detail.html?id=6'"
-        >
-
-          <div class="transaction-main-info">
-            <strong>학교 매점</strong>
-            <span>식품</span>
-          </div>
-
-          <div class="transaction-time">
-            <strong>12:10</strong>
-            <span>2026.08.25</span>
-          </div>
-
-          <div class="transaction-amount">
-            3,500원
-          </div>
-
-          <div>
-            <span class="transaction-status normal">
-              정상
-            </span>
-          </div>
-
-        </div>
-
-      </div>
+      <div class="full-transaction-list"><p class="empty-state">불러오는 중입니다.</p></div>
 
     </section>
 
   </main>
 
+  <script src="./js/common.js"></script>
+  <script src="./js/transactions.js"></script>
+  <script src="./js/user-header.js"></script>
+  
 </body>
 </html>
