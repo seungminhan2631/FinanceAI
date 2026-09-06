@@ -14,9 +14,12 @@
 
     <section class="login-card signup-card">
 
-      <div class="login-logo">
-        FinanceAI
-      </div>
+      <a class="login-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <h1>회원가입</h1>
 
@@ -53,6 +56,7 @@
           <input
             type="text"
             id="signupId"
+            autocomplete="username"
             placeholder="사용할 아이디를 입력하세요"
             required
           >
@@ -64,6 +68,7 @@
           <input
             type="password"
             id="signupPassword"
+            autocomplete="new-password"
             placeholder="비밀번호를 입력하세요"
             required
           >
@@ -75,6 +80,7 @@
           <input
             type="password"
             id="passwordConfirm"
+            autocomplete="new-password"
             placeholder="비밀번호를 다시 입력하세요"
             required
           >
@@ -102,6 +108,7 @@
           회원가입
         </button>
 
+        <p id="authStatus" class="form-status" role="status" aria-live="polite"></p>
       </form>
 
       <div class="login-help">
@@ -115,86 +122,8 @@
 
   </main>
 
-  <script>
-const API_BASE_URL = "http://localhost:3000";
-
-document
-  .getElementById("signupForm")
-  .addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-    const name =
-      document.getElementById("name").value.trim();
-
-    const birthDate =
-      document.getElementById("birthDate").value;
-
-    const userId =
-      document.getElementById("signupId").value.trim();
-
-    const password =
-      document.getElementById("signupPassword").value;
-
-    const passwordConfirm =
-      document.getElementById("passwordConfirm").value;
-
-    const phone =
-      document.getElementById("phone").value.trim();
-
-
-    if (password !== passwordConfirm) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
-
-
-    try {
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/auth/signup`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name,
-            birthDate,
-            userId,
-            password,
-            phone
-          })
-        }
-      );
-
-
-      const data = await response.json();
-
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          "회원가입에 실패했습니다."
-        );
-      }
-
-
-      alert("회원가입이 완료되었습니다.");
-
-      window.location.href = "./login.html";
-
-
-    } catch (error) {
-
-      console.error("회원가입 오류:", error);
-
-      alert(error.message);
-    }
-
-  });
-</script>
+  <script src="./js/common.js"></script>
+<script src="./js/auth.js"></script>
 
 </body>
 </html>

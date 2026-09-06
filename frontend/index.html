@@ -13,9 +13,12 @@
   <header class="landing-header">
     <div class="landing-nav">
 
-      <div class="landing-logo">
-        FinanceAI
-      </div>
+      <a class="landing-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <nav class="landing-menu">
         <a href="#service">서비스 소개</a>
@@ -40,10 +43,12 @@
 
     <button
       id="profileButton"
+      aria-label="회원정보 메뉴"
+      aria-controls="profileMenu"
       class="profile-button"
       type="button"
     >
-      김
+      -
     </button>
 
 
@@ -55,7 +60,7 @@
       <div class="profile-menu-user">
 
         <div class="profile-menu-avatar">
-          김
+          -
         </div>
 
         <div>
@@ -73,13 +78,7 @@
         회원정보 보기
       </a>
 
-      <a href="./profile.html">
-        회원정보 수정
-      </a>
 
-      <a href="./profile.html">
-        설정
-      </a>
 
     </div>
 
@@ -109,7 +108,7 @@
       <div class="hero-content">
 
         <span class="hero-badge">
-          청소년 금융 이상행동 조기경보 AI
+          청소년 금융 이상행동 경보 AI
         </span>
 
         <h1>
@@ -119,8 +118,7 @@
 
         <p>
           청소년의 평소 결제 패턴과 시간, 금액, 업종 등의 맥락을 분석하여
-          카드 도용, 대리결제, 갈취 및 강요 등 비정상 금융행동을
-          조기에 탐지합니다.
+          카드 도용, 대리결제, 갈취 및 강요 등 비정상 금융행동을 탐지합니다.
         </p>
 
 
@@ -160,7 +158,7 @@
         <div class="demo-card">
 
   <p class="demo-title">
-    현재 금융 위험도
+    이번달 거래 평균 위험점수
   </p>
 
   <div class="demo-score">
@@ -183,6 +181,7 @@
     나의 위험도는?
   </span>
 
+  <p id="homeAverageDescription" class="feature-note">분석 가능한 이번달 거래의 평균 점수입니다.</p>
   <div class="demo-divider"></div>
 
 
@@ -212,28 +211,28 @@
     style="display: none;"
   >
 
-    <p class="demo-alert-title">
-      이상 금융행동 감지
+    <p id="homeRecentTitle" class="demo-alert-title">
+      최근 주의·위험 거래
     </p>
 
     <div
       id="homeRisk1"
       class="demo-alert"
     >
-      비정상 고액 결제
+      불러오는 중입니다.
     </div>
 
     <div
       id="homeRisk2"
       class="demo-alert"
     >
-      심야 결제
+      -
     </div>
 
   </div>
 
 </div>
-
+      </div>
     </section>
 
 
@@ -365,429 +364,12 @@
     <strong>FinanceAI</strong>
 
     <p>
-      청소년 금융 이상행동 조기경보 AI
+      청소년 금융 이상행동 경보 AI
     </p>
   </footer>
 
- <script>
-const API_BASE_URL = "http://localhost:3000";
-
-const isLoggedIn =
-  localStorage.getItem("isLoggedIn") === "true";
-
-const LOGIN_USER_ID =
-  localStorage.getItem("userId");
-
-const CURRENT_USER_ID = "U002";
-
-
-// 화면 요소
-const homeRiskScore =
-  document.getElementById("homeRiskScore");
-
-const homeRiskLevel =
-  document.getElementById("homeRiskLevel");
-
-const guestRiskContent =
-  document.getElementById("guestRiskContent");
-
-const userRiskContent =
-  document.getElementById("userRiskContent");
-
-const homeRisk1 =
-  document.getElementById("homeRisk1");
-
-const homeRisk2 =
-  document.getElementById("homeRisk2");
-
-const loginButton =
-  document.getElementById("loginButton");
-
-const logoutButton =
-  document.getElementById("logoutButton");
-
-const profileArea =
-  document.getElementById("profileArea");
-
-const profileButton =
-  document.getElementById("profileButton");
-
-const profileMenu =
-  document.getElementById("profileMenu");
-
-const startButton =
-  document.getElementById("startButton");
-
-const paymentButton =
-  document.getElementById("paymentButton");
-
-
-// 로그인 상태
-if (isLoggedIn && LOGIN_USER_ID) {
-
-  loginButton.style.display = "none";
-
-  profileArea.style.display = "block";
-  logoutButton.style.display = "inline-block";
-
-  startButton.style.display = "none";
-  paymentButton.style.display = "inline-flex";
-
-  guestRiskContent.style.display = "none";
-  userRiskContent.style.display = "block";
-
-  updateProfile();
-  loadHomeRisk();
-
-} else {
-
-  showGuestView();
-}
-
-
-// 비로그인 화면
-function showGuestView() {
-
-  homeRiskScore.textContent = "?";
-  homeRiskLevel.textContent = "자녀의 위험도는?";
-
-  guestRiskContent.style.display = "block";
-  userRiskContent.style.display = "none";
-
-  loginButton.style.display = "inline-flex";
-
-  profileArea.style.display = "none";
-  logoutButton.style.display = "none";
-
-  startButton.style.display = "inline-flex";
-  paymentButton.style.display = "none";
-}
-
-
-// 로그인 사용자 프로필
-function updateProfile() {
-
-  const profileName =
-    document.querySelector(
-      ".profile-menu-user strong"
-    );
-
-  const profileId =
-    document.querySelector(
-      ".profile-menu-user p"
-    );
-
-  const profileAvatar =
-    document.querySelector(
-      ".profile-menu-avatar"
-    );
-
-  if (profileName) {
-    profileName.textContent =
-  localStorage.getItem("userName") || LOGIN_USER_ID;
-  }
-
-  if (profileId) {
-    profileId.textContent =
-      LOGIN_USER_ID;
-  }
-
-  if (profileButton) {
-    profileButton.textContent = "P";
-  }
-
-  if (profileAvatar) {
-    profileAvatar.textContent = "P";
-  }
-}
-
-
-// 실제 FDS 위험도 가져오기
-async function loadHomeRisk() {
-
-  try {
-
-    const [
-      transactionResponse,
-      alertResponse
-    ] = await Promise.all([
-
-      fetch(
-        `${API_BASE_URL}/api/transactions`
-      ),
-
-      fetch(
-        `${API_BASE_URL}/api/alerts`
-      )
-
-    ]);
-
-
-    const transactionData =
-      await transactionResponse.json();
-
-    const alertData =
-      await alertResponse.json();
-
-
-    if (
-      !transactionResponse.ok ||
-      !transactionData.success
-    ) {
-      throw new Error(
-        "거래내역 조회 실패"
-      );
-    }
-
-
-    if (
-      !alertResponse.ok ||
-      !alertData.success
-    ) {
-      throw new Error(
-        "FDS 알림 조회 실패"
-      );
-    }
-
-
-    // 현재 로그인 사용자 거래
-    const userTransactions =
-      (transactionData.transactions || [])
-        .filter((tx) => {
-
-          return String(
-            tx.user_id || tx.userId
-          ) === CURRENT_USER_ID;
-
-        })
-        .sort((a, b) => {
-
-          return new Date(
-            b.transaction_datetime
-          ) - new Date(
-            a.transaction_datetime
-          );
-
-        });
-
-
-    // 현재 로그인 사용자 알림
-    const userAlerts =
-      (alertData.alerts || [])
-        .filter((alert) => {
-
-          return String(
-            alert.user_id || alert.userId
-          ) === CURRENT_USER_ID;
-
-        })
-        .sort((a, b) => {
-
-          return new Date(b.created_at)
-            - new Date(a.created_at);
-
-        });
-
-
-    updateRiskDisplay(
-      userTransactions,
-      userAlerts
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "메인 위험도 조회 오류:",
-      error
-    );
-
-    homeRiskScore.textContent = "-";
-    homeRiskLevel.textContent =
-      "데이터 조회 실패";
-
-    homeRisk1.textContent =
-      "서버 연결을 확인해주세요.";
-
-    homeRisk2.style.display = "none";
-  }
-}
-
-
-// 위험도 화면 반영
-function updateRiskDisplay(
-  transactions,
-  alerts
-) {
-
-  // 거래가 하나도 없는 경우
-  if (transactions.length === 0) {
-
-    homeRiskScore.textContent = "0";
-    homeRiskLevel.textContent = "정상";
-
-    homeRisk1.textContent =
-      "아직 결제내역이 없습니다.";
-
-    homeRisk2.style.display = "none";
-
-    return;
-  }
-
-
-  // 가장 최근 거래
-  const latestTransaction =
-    transactions[0];
-
-
-  // 최근 거래에 해당하는 FDS 알림
-  const latestAlert =
-    alerts.find((alert) => {
-
-      return String(
-        alert.transaction_id
-      ) === String(
-        latestTransaction.transaction_id
-      );
-
-    });
-
-
-  // 최근 거래에 알림 없음 = 정상
-  if (!latestAlert) {
-
-    homeRiskScore.textContent = "0";
-    homeRiskLevel.textContent = "정상";
-
-    homeRisk1.textContent =
-      "최근 이상행동 탐지 없음";
-
-    homeRisk2.textContent =
-      "정상적인 결제 패턴입니다.";
-
-    homeRisk2.style.display = "block";
-
-    return;
-  }
-
-
-  const score =
-    Number(
-      latestAlert.risk_score || 0
-    );
-
-  const level =
-    String(
-      latestAlert.risk_level || ""
-    ).toUpperCase();
-
-
-  homeRiskScore.textContent = score;
-
-  homeRiskLevel.textContent =
-    convertRiskLevel(level);
-
-
-  // 최근 탐지 2건 표시
-  const recentAlerts =
-    alerts.slice(0, 2);
-
-
-  if (recentAlerts[0]) {
-
-    homeRisk1.textContent =
-      recentAlerts[0].reason
-      || "이상행동 탐지";
-
-  }
-
-
-  if (recentAlerts[1]) {
-
-    homeRisk2.textContent =
-      recentAlerts[1].reason
-      || "이상행동 탐지";
-
-    homeRisk2.style.display = "block";
-
-  } else {
-
-    homeRisk2.style.display = "none";
-  }
-}
-
-
-// FDS 상태 한글 변환
-function convertRiskLevel(level) {
-
-  if (level === "HIGH") {
-    return "위험";
-  }
-
-  if (level === "CAUTION") {
-    return "주의";
-  }
-
-  if (level === "MONITOR") {
-    return "모니터링";
-  }
-
-  return "정상";
-}
-
-
-// 로그아웃
-if (logoutButton) {
-
-  logoutButton.addEventListener(
-    "click",
-    function () {
-
-      localStorage.removeItem(
-        "isLoggedIn"
-      );
-
-      localStorage.removeItem(
-        "userId"
-      );
-
-      window.location.href =
-        "./index.html";
-    }
-  );
-}
-
-
-// 프로필 메뉴 열기
-if (profileButton) {
-
-  profileButton.addEventListener(
-    "click",
-    function (event) {
-
-      event.stopPropagation();
-
-      profileMenu.classList.toggle(
-        "show"
-      );
-    }
-  );
-}
-
-
-// 화면 다른 곳 클릭 시 프로필 닫기
-document.addEventListener(
-  "click",
-  function () {
-
-    if (profileMenu) {
-      profileMenu.classList.remove(
-        "show"
-      );
-    }
-  }
-);
-</script>
+ <script src="./js/common.js"></script>
+<script src="./js/home.js"></script>
 
 </body>
 </html>

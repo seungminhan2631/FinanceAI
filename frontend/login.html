@@ -14,9 +14,12 @@
 
     <section class="login-card">
 
-      <div class="login-logo">
-        FinanceAI
-      </div>
+      <a class="login-logo logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+        <span class="brand-symbol" aria-hidden="true">
+          <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+        </span>
+        <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+      </a>
 
       <h1>로그인</h1>
 
@@ -33,6 +36,7 @@
           <input
             type="text"
             id="userId"
+            autocomplete="username"
             placeholder="아이디를 입력하세요"
             required
           >
@@ -45,6 +49,7 @@
           <input
             type="password"
             id="password"
+            autocomplete="current-password"
             placeholder="비밀번호를 입력하세요"
             required
           >
@@ -55,6 +60,7 @@
           로그인
         </button>
 
+        <p id="authStatus" class="form-status" role="status" aria-live="polite"></p>
       </form>
 
       <div class="login-help">
@@ -75,102 +81,8 @@
   </main>
 
 
-  <script>
-const API_BASE_URL = "http://localhost:3000";
-
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", async function(event) {
-
-    event.preventDefault();
-
-
-    const userId =
-      document
-        .getElementById("userId")
-        .value
-        .trim();
-
-    const password =
-      document
-        .getElementById("password")
-        .value;
-
-
-    if (!userId || !password) {
-      alert("아이디와 비밀번호를 입력해주세요.");
-      return;
-    }
-
-
-    try {
-
-      const response = await fetch(
-        `${API_BASE_URL}/api/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            userId,
-            password
-          })
-        }
-      );
-
-
-      const data = await response.json();
-
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.message ||
-          data.error ||
-          "로그인에 실패했습니다."
-        );
-      }
-
-
-      // 실제 백엔드가 반환한 사용자 정보 저장
-      localStorage.setItem(
-        "isLoggedIn",
-        "true"
-      );
-
-      localStorage.setItem(
-        "userId",
-        data.user.user_id
-      );
-
-      localStorage.setItem(
-        "userName",
-        data.user.name
-      );
-
-      localStorage.setItem(
-  "birthDate",
-  data.user.birthDate
-);
-
-      localStorage.setItem(
-        "phone",
-        data.user.phone
-      );
-
-
-      window.location.href = "./index.html";
-
-
-    } catch (error) {
-
-      console.error("로그인 오류:", error);
-
-      alert(error.message);
-    }
-
-  });
-</script>
+  <script src="./js/common.js"></script>
+<script src="./js/auth.js"></script>
 
 </body>
 </html>

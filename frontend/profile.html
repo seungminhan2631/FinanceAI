@@ -13,10 +13,12 @@
 
   <header class="topbar">
 
-    <div class="logo-box">
-      <h1>FinanceAI</h1>
-      <p>청소년 금융 이상행동 조기경보 AI</p>
-    </div>
+    <a class="logo-box logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+      <span class="brand-symbol" aria-hidden="true">
+        <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+      </span>
+      <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+    </a>
 
     <div class="user-box">
       <span id="header-user-name">사용자</span>
@@ -46,7 +48,7 @@
         <h1>회원정보</h1>
 
         <p>
-          계정 및 기본 정보를 확인하고 수정할 수 있습니다.
+          로그인한 계정의 기본 정보를 확인합니다.
         </p>
       </div>
 
@@ -58,7 +60,7 @@
       <aside class="profile-side-card">
 
         <div class="profile-large-avatar">
-          김
+          -
         </div>
 
         <h2 id="profileDisplayName">
@@ -68,7 +70,7 @@
 <p id="profileDisplayId"></p>
 
         <span class="profile-user-badge">
-          보호자 회원
+          회원
         </span>
 
       </aside>
@@ -86,12 +88,7 @@
             </p>
           </div>
 
-          <button
-            id="editProfileButton"
-            class="profile-edit-button"
-          >
-            수정하기
-          </button>
+          <p class="feature-note">회원정보 수정은 아직 지원하지 않습니다.</p>
 
         </div>
 
@@ -122,8 +119,8 @@
 
             <input
               id="profileBirth"
-              type="date"
-              value="2009-03-12"
+              type="text"
+              value=""
               disabled
             >
 
@@ -139,7 +136,7 @@
             <input
               id="profileId"
               type="text"
-              value=" "
+              value=""
               disabled
             >
 
@@ -155,7 +152,7 @@
             <input
               id="profilePhone"
               type="text"
-              value="010-1234-5678"
+              value=""
               disabled
             >
 
@@ -171,7 +168,7 @@
             <input
               id="profileRegion"
               type="text"
-              value="충청남도 천안시"
+              value=""
               disabled
             >
 
@@ -187,7 +184,7 @@
             <input
               id="guardianPhone"
               type="text"
-              value="010-9876-5432"
+              value=""
               disabled
             >
 
@@ -196,26 +193,7 @@
         </div>
 
 
-        <div
-          id="profileSaveArea"
-          class="profile-save-area"
-        >
 
-          <button
-            id="cancelProfileButton"
-            class="profile-cancel-button"
-          >
-            취소
-          </button>
-
-          <button
-            id="saveProfileButton"
-            class="profile-save-button"
-          >
-            저장
-          </button>
-
-        </div>
 
       </section>
 
@@ -224,162 +202,8 @@
   </main>
 
 
-  <script>
-
-const userName =
-  localStorage.getItem("userName") || "사용자";
-
-const userId =
-  localStorage.getItem("userId") || "";
-
-// 큰 이름
-const profileDisplayName =
-  document.getElementById("profileDisplayName");
-
-if (profileDisplayName) {
-  profileDisplayName.textContent = userName;
-}
-
-// 큰 아이디
-const profileDisplayId =
-  document.getElementById("profileDisplayId");
-
-if (profileDisplayId) {
-  profileDisplayId.textContent = userId;
-}
-
-// 프로필 메뉴 이름
-const profileMenuName =
-  document.getElementById("profileMenuName");
-
-if (profileMenuName) {
-  profileMenuName.textContent = userName;
-}
-
-// 프로필 메뉴 아이디
-const profileMenuId =
-  document.getElementById("profileMenuId");
-
-if (profileMenuId) {
-  profileMenuId.textContent = userId;
-}
-
-// 회원정보 입력칸 이름
-const profileNameInput =
-  document.getElementById("profileName");
-
-if (profileNameInput) {
-  profileNameInput.value = userName;
-}
-
-// 회원정보 입력칸 아이디
-const profileIdInput =
-  document.getElementById("profileId");
-
-if (profileIdInput) {
-  profileIdInput.value = userId;
-}
-
-  document.getElementById(
-  "profileDisplayName"
-).textContent = userName;
-
-document.getElementById(
-  "profileDisplayId"
-).textContent = userId;
-
-document.getElementById(
-  "profileName"
-).value = userName;
-
-document.getElementById(
-  "profileId"
-).value = userId;
-
-    const editButton =
-      document.getElementById("editProfileButton");
-
-    const saveArea =
-      document.getElementById("profileSaveArea");
-
-    const saveButton =
-      document.getElementById("saveProfileButton");
-
-    const cancelButton =
-      document.getElementById("cancelProfileButton");
-
-
-    const editableInputs = [
-      document.getElementById("profileName"),
-      document.getElementById("profileBirth"),
-      document.getElementById("profilePhone"),
-      document.getElementById("profileRegion"),
-      document.getElementById("guardianPhone")
-    ];
-
-
-    editButton.addEventListener(
-      "click",
-      function () {
-
-        editableInputs.forEach(
-          function (input) {
-
-            input.disabled = false;
-
-          }
-        );
-
-        saveArea.style.display = "flex";
-
-        editButton.style.display = "none";
-
-      }
-    );
-
-
-    saveButton.addEventListener(
-      "click",
-      function () {
-
-        editableInputs.forEach(
-          function (input) {
-
-            input.disabled = true;
-
-          }
-        );
-
-        saveArea.style.display = "none";
-
-        editButton.style.display = "inline-block";
-
-        alert("회원정보가 수정되었습니다.");
-
-      }
-    );
-
-
-    cancelButton.addEventListener(
-      "click",
-      function () {
-
-        editableInputs.forEach(
-          function (input) {
-
-            input.disabled = true;
-
-          }
-        );
-
-        saveArea.style.display = "none";
-
-        editButton.style.display = "inline-block";
-
-      }
-    );
-
-  </script>
+  <script src="./js/common.js"></script>
+<script src="./js/profile.js"></script>
 
 <script src="./js/user-header.js"></script>
 

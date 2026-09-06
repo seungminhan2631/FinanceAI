@@ -11,10 +11,12 @@
 <body>
 
   <header class="topbar">
-    <div class="logo-box">
-      <h1>FinanceAI</h1>
-      <p>청소년 금융 이상행동 조기경보 AI</p>
-    </div>
+    <a class="logo-box logo-home-link" href="./index.html" aria-label="FinanceAI 홈페이지로 이동">
+      <span class="brand-symbol" aria-hidden="true">
+        <img src="./assets/financeai-logo.png" alt="" width="1254" height="1254">
+      </span>
+      <span class="brand-name">Finance<span class="brand-accent">AI</span></span>
+    </a>
 
     <div class="user-box">
       <span id="header-user-name">사용자</span>
@@ -24,34 +26,38 @@
 
 
   <main class="container">
+    <nav class="page-navigation" aria-label="페이지 이동">
+      <button class="navigation-button" type="button" data-back-fallback="./index.html">← 이전 화면</button>
+      <a class="navigation-button" href="./index.html">홈페이지</a>
+    </nav>
 
     <!-- 금융 위험도 -->
     <section class="risk-card">
 
       <div class="risk-info">
-        <p class="card-title">현재 금융 위험도</p>
+        <p class="card-title">이번달 거래 평균 위험점수</p>
 
         <div class="risk-score-box">
-          <span id="riskScore">72</span>
+          <span id="riskScore">-</span>
           <span class="score-total">/ 100</span>
         </div>
 
-        <span id="riskLevel" class="risk-level">
-          주의
+        <span id="riskLevel" class="transaction-status unavailable">
+          불러오는 중
         </span>
       </div>
 
 
       <div class="risk-message">
 
-        <h2>평소와 다른 결제 행동이 감지되었습니다.</h2>
+        <h2>거래 정보를 불러오는 중입니다.</h2>
 
         <p>
-          최근 거래에서 이상 금융행동 패턴이 확인되었습니다.
+          잠시만 기다려주세요.
         </p>
 
-        <button id="detailButton">
-          탐지 내용 확인
+        <button id="detailButton" disabled>
+          최근 거래 분석 확인
         </button>
 
       </div>
@@ -65,7 +71,7 @@
       <article class="summary-card">
         <p>오늘 결제 금액</p>
         <strong id="todayAmount">
-          128,500원
+          -
         </strong>
       </article>
 
@@ -73,15 +79,15 @@
       <article class="summary-card">
         <p>오늘 결제 횟수</p>
         <strong id="todayCount">
-          6건
+          -
         </strong>
       </article>
 
 
       <article class="summary-card">
-        <p>이상행동 탐지</p>
+        <p>전체 기간 이상행동 탐지</p>
         <strong id="alertCount">
-          2건
+          -
         </strong>
       </article>
 
@@ -111,7 +117,7 @@
 
       <div id="alertList" class="alert-list">
 
-        <!-- JavaScript에서 생성 -->
+        <p class="empty-state">불러오는 중입니다.</p>
 
       </div>
 
@@ -126,19 +132,17 @@
         <div>
           <h2>최근 거래내역</h2>
           <p>
-            최근 승인된 카드 결제 내역입니다.
+            최근 거래를 최신순으로 표시합니다.
           </p>
         </div>
 
-        <button class="text-button">
-          전체보기
-        </button>
+        <a class="text-button" href="./transactions.html">전체보기</a>
 
       </div>
 
       <div id="transactionList" class="transaction-list">
 
-        <!-- JavaScript에서 생성 -->
+        <p class="empty-state">불러오는 중입니다.</p>
 
       </div>
 
@@ -147,6 +151,7 @@
   </main>
 
 
+  <script src="./js/common.js"></script>
   <script src="./js/main.js"></script>
   <script src="./js/user-header.js"></script>
 
