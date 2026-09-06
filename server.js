@@ -17,15 +17,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// DB 연결
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // Supabase 외부 접속에 필수
 });
-
 // 20자리 이하 고유 ID 생성 함수
 function generateShortTxId() {
   const timestamp = Date.now().toString();
